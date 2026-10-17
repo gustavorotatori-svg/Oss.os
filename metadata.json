@@ -1,0 +1,6 @@
+{
+  "name": "Diário dos Oss.os",
+  "description": "Portal de equipamentos e cultura Jiu-Jitsu. Curadoria técnica inspirada no Diário dos Oss.os. Melhores preços e impacto social.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

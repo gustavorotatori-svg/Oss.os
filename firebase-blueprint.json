@@ -1,0 +1,206 @@
+{
+  "entities": {
+    "Review": {
+      "title": "Review",
+      "description": "Product review left by a user",
+      "type": "object",
+      "properties": {
+        "userName": { "type": "string" },
+        "rating": { "type": "number" },
+        "comment": { "type": "string" },
+        "date": { "type": "string" },
+        "userId": { "type": "string" },
+        "userAvatar": { "type": "string" }
+      },
+      "required": ["userName", "rating", "comment", "date", "userId"]
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "Blog post comment left by an athlete",
+      "type": "object",
+      "properties": {
+        "userName": { "type": "string" },
+        "commentText": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "userId": { "type": "string" },
+        "userAvatar": { "type": "string" },
+        "stoicTag": { "type": "string" }
+      },
+      "required": ["userName", "commentText", "createdAt", "userId"]
+    },
+    "Offer": {
+      "title": "Offer",
+      "description": "Product comparison offer from different stores",
+      "type": "object",
+      "properties": {
+        "storeName": { "type": "string" },
+        "price": { "type": "number" },
+        "url": { "type": "string" },
+        "isAvailable": { "type": "boolean" },
+        "shippingPrice": { "type": "number" },
+        "shippingInfo": { "type": "string" },
+        "previousPrice": { "type": "number" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["storeName", "price", "url", "isAvailable"]
+    },
+    "Academy": {
+      "title": "Academy",
+      "description": "Registered BJJ academy or dojo",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "professor": { "type": "string" },
+        "location": { "type": "string" },
+        "verified": { "type": "boolean" }
+      },
+      "required": ["name", "professor", "location"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Curated or custom merchandise offered on the portal",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "originalPrice": { "type": "number" },
+        "imageUrl": { "type": "string" },
+        "affiliateUrl": { "type": "string" },
+        "platform": { "type": "string" },
+        "category": { "type": "string" },
+        "brand": { "type": "string" },
+        "gender": { "type": "string" },
+        "isBestPrice": { "type": "boolean" },
+        "rating": { "type": "number" },
+        "isCurated": { "type": "boolean" },
+        "isFeatured": { "type": "boolean" }
+      },
+      "required": ["title", "price", "imageUrl", "affiliateUrl", "platform", "category"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Athlete's synchronization profile containing rankings, points and academy affiliations",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "beltColor": { "type": "string" },
+        "points": { "type": "number" },
+        "streak": { "type": "number" },
+        "academyId": { "type": "string" },
+        "lgpdConsent": {
+          "type": "object",
+          "properties": {
+            "approvedCadastral": { "type": "boolean" },
+            "approvedWishlistAlerts": { "type": "boolean" },
+            "approvedSessionCookies": { "type": "boolean" },
+            "approvedNavigation": { "type": "boolean" },
+            "consentDate": { "type": "string" },
+            "userAgent": { "type": "string" },
+            "ipMock": { "type": "string" }
+          },
+          "required": ["approvedCadastral", "approvedWishlistAlerts", "approvedSessionCookies", "approvedNavigation", "consentDate", "userAgent"]
+        }
+      },
+      "required": ["displayName", "points"]
+    },
+    "OfferSubscription": {
+      "title": "OfferSubscription",
+      "description": "User subscription for offer notifications on specific products or categories",
+      "type": "object",
+      "properties": {
+        "targetType": { "type": "string" },
+        "targetId": { "type": "string" },
+        "targetName": { "type": "string" },
+        "channels": {
+          "type": "object",
+          "properties": {
+            "email": { "type": "boolean" },
+            "inApp": { "type": "boolean" }
+          }
+        },
+        "email": { "type": "string" },
+        "triggerOnPriceDrop": { "type": "boolean" },
+        "triggerOnNewDeal": { "type": "boolean" },
+        "discountThresholdPct": { "type": "number" },
+        "targetPrice": { "type": "number" },
+        "active": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["targetType", "targetId", "targetName", "active"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Exhaustive collection of curated products syncable to all clients"
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile document containing stats, points, and configurations"
+    },
+    "/academies/{academyId}": {
+      "schema": "Academy",
+      "description": "Collection of BJJ gyms and academies registered as affiliate schools in the portal"
+    },
+    "/blog_posts/{postId}/comments/{commentId}": {
+      "schema": "Comment",
+      "description": "Collection of comments discussing techniques and Stoic theories for a specific BJJ blog post"
+    },
+    "/products/{productId}/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Collection of reviews for a specific product"
+    },
+    "/products/{productId}/offers/{offerId}": {
+      "schema": "Offer",
+      "description": "Product comparison current offers in different platforms"
+    },
+    "/users/{userId}/wishlist/{productId}": {
+      "schema": { 
+        "type": "object", 
+        "properties": { 
+          "addedAt": { "type": "string", "format": "date-time" },
+          "alertEnabled": { "type": "boolean" },
+          "targetPrice": { "type": "number" },
+          "lastNotifiedPrice": { "type": "number" },
+          "notificationType": { "type": "string" },
+          "notificationEmail": { "type": "string" },
+          "lastNotifiedAt": { "type": "string", "format": "date-time" }
+        } 
+      },
+      "description": "User's saved products with optional price drop alerts"
+    },
+    "/users/{userId}/fcmTokens/{tokenId}": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "token": { "type": "string" },
+          "updatedAt": { "type": "string", "format": "date-time" },
+          "deviceType": { "type": "string" }
+        }
+      },
+      "description": "Registered FCM pushes tokens for user"
+    },
+    "/users/{userId}/notifications/{notificationId}": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "body": { "type": "string" },
+          "type": { "type": "string" },
+          "isRead": { "type": "boolean" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "link": { "type": "string" }
+        }
+      },
+      "description": "User specific push and in-app technical notifications"
+    },
+    "/users/{userId}/offerSubscriptions/{subscriptionId}": {
+      "schema": "OfferSubscription",
+      "description": "User offer notifications subscriptions for specific products or entire categories"
+    }
+  }
+}

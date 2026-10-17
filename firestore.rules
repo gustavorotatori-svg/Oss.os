@@ -1,0 +1,219 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ==========================================
+    // FUNÇÕES AUXILIARES DE SEGURANÇA E VALIDAÇÃO
+    // ==========================================
+    
+    // Verifica se o usuário está autenticado no Firebase Auth
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Verifica se o usuário autenticado é o proprietário do documento
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    // Dados recebidos na requisição (create / update)
+    function incoming() {
+      return request.resource.data;
+    }
+    
+    // Dados existentes no Firestore antes da operação
+    function existing() {
+      return resource.data;
+    }
+    
+    // Prevenção contra injeção e IDs maliciosos (Path Variable Hardening)
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Validação estrita do modelo de Produto
+    function isValidProduct(data) {
+      return data.title is string && data.title.size() >= 2 && data.title.size() <= 150 &&
+             data.price is number && data.price >= 0 &&
+             data.imageUrl is string && data.imageUrl.size() > 0 && data.imageUrl.size() <= 1024 &&
+             data.affiliateUrl is string && data.affiliateUrl.size() > 0 && data.affiliateUrl.size() <= 1024 &&
+             data.platform is string && data.platform.size() >= 2 && data.platform.size() <= 50 &&
+             data.category is string && data.category.size() >= 2 && data.category.size() <= 50 &&
+             (data.get('description', null) == null || (data.description is string && data.description.size() <= 2000)) &&
+             (data.get('brand', null) == null || (data.brand is string && data.brand.size() <= 100)) &&
+             (data.get('gender', null) == null || (data.gender is string && data.gender.size() <= 50)) &&
+             (data.get('originalPrice', null) == null || (data.originalPrice is number && data.originalPrice >= 0)) &&
+             (data.get('isBestPrice', null) == null || data.isBestPrice is bool) &&
+             (data.get('rating', null) == null || (data.rating is number && data.rating >= 0 && data.rating <= 5)) &&
+             (data.get('isCurated', null) == null || data.isCurated is bool) &&
+             (data.get('isFeatured', null) == null || data.isFeatured is bool);
+    }
+
+    // Validação estrita do modelo de Oferta (Price Comparison)
+    function isValidOffer(data) {
+      return data.storeName is string && data.storeName.size() >= 1 && data.storeName.size() <= 100 &&
+             data.price is number && data.price >= 0 &&
+             data.url is string && data.url.size() > 0 && data.url.size() <= 1024 &&
+             data.isAvailable is bool &&
+             (data.get('shippingPrice', null) == null || (data.shippingPrice is number && data.shippingPrice >= 0)) &&
+             (data.get('shippingInfo', null) == null || (data.shippingInfo is string && data.shippingInfo.size() <= 128)) &&
+             (data.get('previousPrice', null) == null || (data.previousPrice is number && data.previousPrice >= 0)) &&
+             (data.get('updatedAt', null) == null || data.updatedAt is string || data.updatedAt is timestamp);
+    }
+
+    // Validação estrita do modelo de Perfil de Usuário
+    function isValidUserProfile(data) {
+      return data.displayName is string && data.displayName.size() >= 2 && data.displayName.size() <= 100 &&
+             data.points is number && data.points >= 0 &&
+             (data.get('email', null) == null || (data.email is string && data.email.size() <= 150)) &&
+             (data.get('beltColor', null) == null || (data.beltColor is string && data.beltColor.size() <= 50)) &&
+             (data.get('streak', null) == null || (data.streak is number && data.streak >= 0)) &&
+             (data.get('academyId', null) == null || (data.academyId is string && data.academyId.size() <= 128)) &&
+             (data.get('lgpdConsent', null) == null || data.lgpdConsent is map);
+    }
+
+    // Validação de Avaliação (Review)
+    function isValidReview(data) {
+      return data.userName is string && data.userName.size() >= 2 && data.userName.size() <= 100 &&
+             data.rating is number && data.rating >= 1 && data.rating <= 5 &&
+             data.comment is string && data.comment.size() >= 5 && data.comment.size() <= 3000 &&
+             data.date is string && data.date.size() > 0 &&
+             data.userId == request.auth.uid &&
+             (data.get('userAvatar', null) == null || (data.userAvatar is string && data.userAvatar.size() <= 512));
+    }
+
+    // Validação de Comentário de Blog
+    function isValidComment(data) {
+      return data.userName is string && data.userName.size() >= 2 && data.userName.size() <= 100 &&
+             data.commentText is string && data.commentText.size() >= 2 && data.commentText.size() <= 4000 &&
+             data.createdAt is timestamp &&
+             data.userId == request.auth.uid &&
+             (data.get('userAvatar', null) == null || (data.userAvatar is string && data.userAvatar.size() <= 512)) &&
+             (data.get('stoicTag', null) == null || (data.stoicTag is string && data.stoicTag.size() <= 64));
+    }
+
+    // Validação de Academia
+    function isValidAcademy(data) {
+      return data.name is string && data.name.size() >= 2 && data.name.size() <= 150 &&
+             data.professor is string && data.professor.size() >= 2 && data.professor.size() <= 150 &&
+             data.location is string && data.location.size() >= 2 && data.location.size() <= 150 &&
+             (data.get('verified', null) == null || data.verified is bool);
+    }
+
+    // ==========================================
+    // REGRAS DE ACESSO
+    // ==========================================
+
+    // 1. BLOQUEIO GLOBAL PADRÃO (Default Deny)
+    // Qualquer caminho não explicitamente liberado abaixo é categoricamente proibido.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ----------------------------------------------------
+    // 2. PRODUTOS E OFERTAS: ACESSO PÚBLICO DE LEITURA
+    // ----------------------------------------------------
+
+    // Catálogo Principal de Produtos: Leitura 100% pública (usuários anônimos e logados)
+    match /products/{productId} {
+      allow read: if true;
+      
+      // Escrita restrita a usuários autenticados com validação de esquema
+      allow create, update: if isSignedIn() && isValidId(productId) && isValidProduct(incoming()) &&
+                            incoming().keys().hasAll(['title', 'price', 'imageUrl', 'affiliateUrl', 'platform', 'category']);
+      allow delete: if isSignedIn();
+
+      // Subcoleção de Ofertas associadas ao produto: Leitura 100% pública
+      match /offers/{offerId} {
+        allow read: if true;
+        
+        // Escrita protegida: somente autenticados com validação de campos
+        allow create, update: if isSignedIn() && isValidId(productId) && isValidId(offerId) &&
+                              isValidOffer(incoming()) &&
+                              incoming().keys().hasAll(['storeName', 'price', 'url', 'isAvailable']);
+        allow delete: if isSignedIn();
+      }
+
+      // Avaliações de Produtos (Reviews): Leitura pública
+      match /reviews/{reviewId} {
+        allow read: if true;
+        allow create: if isSignedIn() && isValidId(productId) && isValidId(reviewId) &&
+                      isValidReview(incoming()) &&
+                      incoming().keys().hasAll(['userName', 'rating', 'comment', 'date', 'userId']);
+        allow update: if isSignedIn() && isOwner(existing().userId) &&
+                      isValidReview(incoming()) &&
+                      incoming().userId == existing().userId;
+        allow delete: if isSignedIn() && isOwner(existing().userId);
+      }
+    }
+
+    // Coleção Raiz de Ofertas (caso consultadas diretamente no nível raiz): Leitura 100% pública
+    match /offers/{offerId} {
+      allow read: if true;
+      allow create, update: if isSignedIn() && isValidId(offerId) &&
+                            isValidOffer(incoming()) &&
+                            incoming().keys().hasAll(['storeName', 'price', 'url', 'isAvailable']);
+      allow delete: if isSignedIn();
+    }
+
+    // Suporte a Collection Group Queries para Ofertas: Leitura pública garantida
+    match /{path=**}/offers/{offerId} {
+      allow read: if true;
+    }
+
+    // Suporte a Collection Group Queries para Reviews: Leitura pública
+    match /{path=**}/reviews/{reviewId} {
+      allow read: if true;
+    }
+
+    // ----------------------------------------------------
+    // 3. DADOS DE USUÁRIOS: PROTEÇÃO ESTRITA POR PROPRIETÁRIO
+    // ----------------------------------------------------
+
+    // Cada usuário só pode ler e escrever EXCLUSIVAMENTE em seu próprio documento (/users/{userId})
+    match /users/{userId} {
+      // Bloqueia qualquer leitura ou escrita de terceiros ou visitantes anônimos
+      allow read, write: if isOwner(userId);
+
+      // Todas as subcoleções privadas do usuário (wishlist, tokens FCM, notificações, histórico)
+      // herdam a proteção estrita: somente o próprio dono pode ler e escrever
+      match /{allSubcollections=**} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // ----------------------------------------------------
+    // 4. COLEÇÕES AUXILIARES DO SISTEMA
+    // ----------------------------------------------------
+
+    // Blog e comentários da comunidade
+    match /blog_posts/{postId}/comments/{commentId} {
+      allow read: if true;
+      allow create: if isSignedIn() && isValidId(postId) && isValidId(commentId) &&
+                    isValidComment(incoming()) &&
+                    incoming().keys().hasAll(['userName', 'commentText', 'createdAt', 'userId']);
+      allow update: if isSignedIn() && isOwner(existing().userId) &&
+                    isValidComment(incoming()) &&
+                    incoming().userId == existing().userId;
+      allow delete: if isSignedIn() && isOwner(existing().userId);
+    }
+
+    // Academias parceiras
+    match /academies/{academyId} {
+      allow read: if true;
+      allow create, update: if isSignedIn() && isValidId(academyId) && isValidAcademy(incoming()) &&
+                            incoming().keys().hasAll(['name', 'professor', 'location']);
+    }
+
+    // Inscrição pública em newsletter
+    match /subscribers/{subId} {
+      allow create: if true;
+    }
+
+    // Ponto de teste obrigatório de conectividade do Firebase SDK
+    match /test/{testId} {
+      allow read: if true;
+    }
+  }
+}

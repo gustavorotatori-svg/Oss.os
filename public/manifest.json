@@ -1,0 +1,25 @@
+{
+  "name": "Diário dos Oss.os | Equipamentos e Cultura Jiu-Jitsu",
+  "short_name": "Diário dos Oss.os",
+  "description": "Portal de equipamentos e cultura Jiu-Jitsu. Curadoria técnica inspirada no Diário dos Oss.os.",
+  "start_url": "/?pwa=true",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "categories": ["shopping", "sports"],
+  "icons": [
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

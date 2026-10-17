@@ -1,0 +1,29 @@
+# Robots.txt for OSS.OS - Comparador 100% Grátis de Kimonos e Equipamentos de Jiu-Jitsu
+User-agent: *
+Allow: /
+Allow: /shop
+Allow: /comparator
+Allow: /transparency
+Allow: /wishlist
+Allow: /product/
+Disallow: /api/ai/
+Disallow: /api/import/
+Disallow: /admin
+Disallow: /settings
+
+# Major Search Engine Crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /images/
+Allow: /assets/
+
+# Crawl Delay to ensure smooth performance
+Crawl-delay: 1
+
+# XML Sitemap Pointer
+Sitemap: https://oss.os/sitemap.xml
