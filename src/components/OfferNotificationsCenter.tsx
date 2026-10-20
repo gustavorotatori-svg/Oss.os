@@ -796,7 +796,7 @@ export const OfferNotificationsCenter: React.FC<OfferNotificationsCenterProps> =
               playClickSound();
               setActiveSubTab('historico');
             }}
-            className={`px-4 py-3 text-[10px] font-mono font-black uppercase tracking-wider flex items-center gap-2 border-t-2 border-x-2 -mb-[2px] transition-all cursor-pointer ${
+            className={`px-3 sm:px-4 py-3 text-[10px] font-mono font-black uppercase tracking-wider flex items-center gap-2 border-t-2 border-x-2 -mb-[2px] transition-all cursor-pointer shrink-0 ${
               activeSubTab === 'historico'
                 ? 'bg-white dark:bg-zinc-900 text-black dark:text-white border-black dark:border-zinc-700 shadow-[2px_-2px_0px_#000000] dark:shadow-[2px_-2px_0px_#ffffff]'
                 : 'bg-transparent text-zinc-500 hover:text-black dark:hover:text-white border-transparent'
@@ -818,7 +818,7 @@ export const OfferNotificationsCenter: React.FC<OfferNotificationsCenterProps> =
               playClickSound();
               setActiveSubTab('produtos');
             }}
-            className={`px-4 py-3 text-[10px] font-mono font-black uppercase tracking-wider flex items-center gap-2 border-t-2 border-x-2 -mb-[2px] transition-all cursor-pointer ${
+            className={`px-3 sm:px-4 py-3 text-[10px] font-mono font-black uppercase tracking-wider flex items-center gap-2 border-t-2 border-x-2 -mb-[2px] transition-all cursor-pointer shrink-0 ${
               activeSubTab === 'produtos'
                 ? 'bg-white dark:bg-zinc-900 text-black dark:text-white border-black dark:border-zinc-700 shadow-[2px_-2px_0px_#000000] dark:shadow-[2px_-2px_0px_#ffffff]'
                 : 'bg-transparent text-zinc-500 hover:text-black dark:hover:text-white border-transparent'
@@ -838,7 +838,7 @@ export const OfferNotificationsCenter: React.FC<OfferNotificationsCenterProps> =
               playClickSound();
               setActiveSubTab('categorias');
             }}
-            className={`px-4 py-3 text-[10px] font-mono font-black uppercase tracking-wider flex items-center gap-2 border-t-2 border-x-2 -mb-[2px] transition-all cursor-pointer ${
+            className={`px-3 sm:px-4 py-3 text-[10px] font-mono font-black uppercase tracking-wider flex items-center gap-2 border-t-2 border-x-2 -mb-[2px] transition-all cursor-pointer shrink-0 ${
               activeSubTab === 'categorias'
                 ? 'bg-white dark:bg-zinc-900 text-black dark:text-white border-black dark:border-zinc-700 shadow-[2px_-2px_0px_#000000] dark:shadow-[2px_-2px_0px_#ffffff]'
                 : 'bg-transparent text-zinc-500 hover:text-black dark:hover:text-white border-transparent'
@@ -855,7 +855,7 @@ export const OfferNotificationsCenter: React.FC<OfferNotificationsCenterProps> =
               playClickSound();
               setActiveSubTab('simulador');
             }}
-            className={`px-4 py-3 text-[10px] font-mono font-black uppercase tracking-wider flex items-center gap-2 border-t-2 border-x-2 -mb-[2px] transition-all cursor-pointer ${
+            className={`px-3 sm:px-4 py-3 text-[10px] font-mono font-black uppercase tracking-wider flex items-center gap-2 border-t-2 border-x-2 -mb-[2px] transition-all cursor-pointer shrink-0 ${
               activeSubTab === 'simulador'
                 ? 'bg-red-600 text-white border-red-600 shadow-[2px_-2px_0px_#000000]'
                 : 'bg-transparent text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 border-transparent'

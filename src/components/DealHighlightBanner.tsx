@@ -139,10 +139,10 @@ export const DealHighlightBanner: React.FC<DealHighlightBannerProps> = ({
             </div>
 
             {/* CTAs */}
-            <div className="pt-2 flex flex-wrap items-center gap-3">
+            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <Button
                 onClick={() => onSelectProduct ? onSelectProduct(topDeal) : null}
-                className="bg-green-600 hover:bg-green-500 text-black font-mono font-black uppercase text-xs tracking-wider px-6 py-5 rounded-none cursor-pointer transition-all flex items-center gap-2"
+                className="w-full sm:w-auto bg-green-600 hover:bg-green-500 text-black font-mono font-black uppercase text-xs tracking-wider px-6 py-5 rounded-none cursor-pointer transition-all flex items-center justify-center gap-2"
                 id="deal-banner-view-btn"
               >
                 <Zap size={14} fill="black" />
@@ -154,7 +154,7 @@ export const DealHighlightBanner: React.FC<DealHighlightBannerProps> = ({
                 <Button
                   onClick={() => onAddToCart(topDeal)}
                   variant="outline"
-                  className="bg-zinc-900 hover:bg-white hover:text-black text-white border-zinc-700 font-mono font-bold uppercase text-xs px-5 py-5 rounded-none cursor-pointer transition-colors flex items-center gap-2"
+                  className="w-full sm:w-auto bg-zinc-900 hover:bg-white hover:text-black text-white border-zinc-700 font-mono font-bold uppercase text-xs px-5 py-5 rounded-none cursor-pointer transition-colors flex items-center justify-center gap-2"
                   id="deal-banner-cart-btn"
                 >
                   <ShoppingBag size={14} />

@@ -423,7 +423,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
             playClickSound();
             setActiveTab('wishlist');
           }}
-          className={`pb-3 px-3 font-mono text-xs font-black uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+          className={`pb-3 px-3 font-mono text-xs font-black uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
             activeTab === 'wishlist'
               ? 'border-black dark:border-white text-black dark:text-white'
               : 'border-transparent text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'
@@ -439,7 +439,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
             playClickSound();
             setActiveTab('alerts');
           }}
-          className={`pb-3 px-3 font-mono text-xs font-black uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+          className={`pb-3 px-3 font-mono text-xs font-black uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
             activeTab === 'alerts'
               ? 'border-black dark:border-white text-black dark:text-white'
               : 'border-transparent text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'
@@ -455,7 +455,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
             playClickSound();
             setActiveTab('history');
           }}
-          className={`pb-3 px-3 font-mono text-xs font-black uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+          className={`pb-3 px-3 font-mono text-xs font-black uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
             activeTab === 'history'
               ? 'border-black dark:border-white text-black dark:text-white'
               : 'border-transparent text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'
@@ -471,7 +471,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
             playClickSound();
             setActiveTab('preferences');
           }}
-          className={`pb-3 px-3 font-mono text-xs font-black uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+          className={`pb-3 px-3 font-mono text-xs font-black uppercase tracking-wider transition-colors border-b-2 flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
             activeTab === 'preferences'
               ? 'border-black dark:border-white text-black dark:text-white'
               : 'border-transparent text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'

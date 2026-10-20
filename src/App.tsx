@@ -7787,7 +7787,7 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
                whileHover={{ scale: 1.05 }}
                whileTap={{ scale: 0.95 }}
                onClick={() => handleNavigate('EXTERNAL_SHOWCASE')}
-               className={`h-8 sm:h-9 px-2 sm:px-2.5 flex items-center gap-1.5 text-[9px] font-mono font-bold uppercase transition-all rounded-none cursor-pointer shrink-0 border ${
+               className={`hidden sm:flex h-8 sm:h-9 px-2 sm:px-2.5 items-center gap-1.5 text-[9px] font-mono font-bold uppercase transition-all rounded-none cursor-pointer shrink-0 border ${
                  view === 'EXTERNAL_SHOWCASE'
                    ? 'bg-green-600 text-black border-green-600 shadow-sm'
                    : 'bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'
@@ -7982,7 +7982,7 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
                </button>
              )}
 
-             <div className="flex items-center h-full shrink-0">
+             <div className="hidden sm:flex items-center h-full shrink-0">
                <LanguageSelector />
              </div>
           </div>
