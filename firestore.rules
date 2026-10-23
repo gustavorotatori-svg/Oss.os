@@ -101,6 +101,20 @@ service cloud.firestore {
              (data.get('verified', null) == null || data.verified is bool);
     }
 
+    // Validação estrita do modelo de Item do Carrinho de Compras
+    function isValidCartItem(data) {
+      return data.id is string && data.id.size() >= 1 && data.id.size() <= 128 &&
+             data.productId is string && data.productId.size() >= 1 && data.productId.size() <= 128 &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 200 &&
+             data.price is number && data.price >= 0 &&
+             data.quantity is number && data.quantity >= 1 && data.quantity <= 999 &&
+             (data.get('size', null) == null || (data.size is string && data.size.size() <= 50)) &&
+             (data.get('imageUrl', null) == null || (data.imageUrl is string && data.imageUrl.size() <= 1024)) &&
+             (data.get('brand', null) == null || (data.brand is string && data.brand.size() <= 100)) &&
+             (data.get('platform', null) == null || (data.platform is string && data.platform.size() <= 50)) &&
+             (data.get('updatedAt', null) == null || data.updatedAt is string || data.updatedAt is timestamp);
+    }
+
     // ==========================================
     // REGRAS DE ACESSO
     // ==========================================
@@ -175,6 +189,13 @@ service cloud.firestore {
     match /users/{userId} {
       // Bloqueia qualquer leitura ou escrita de terceiros ou visitantes anônimos
       allow read, write: if isOwner(userId);
+
+      // Carrinho de compras persistente e sincronizado do usuário
+      match /cart/{itemId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidId(itemId) && isValidCartItem(incoming());
+        allow delete: if isOwner(userId) && isValidId(itemId);
+      }
 
       // Todas as subcoleções privadas do usuário (wishlist, tokens FCM, notificações, histórico)
       // herdam a proteção estrita: somente o próprio dono pode ler e escrever

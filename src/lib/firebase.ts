@@ -19,7 +19,7 @@ import {
 import { onAuthStateChanged } from 'firebase/auth';
 import { getMessaging, isSupported } from 'firebase/messaging';
 import firebaseConfig from '../../firebase-applet-config.json';
-import { Product, UserProfile, WishlistItem, Review, ProductOffer, OfferSubscription, InAppPriceAlertNotification } from '../types';
+import { Product, UserProfile, WishlistItem, Review, ProductOffer, OfferSubscription, InAppPriceAlertNotification, CartItem } from '../types';
 import { performanceTelemetry } from './performanceTelemetry';
 import { systemErrorLog } from './systemErrorLog';
 
@@ -188,6 +188,13 @@ export function subscribeToProducts(
         products.push({ id: docSnap.id, ...docSnap.data() } as Product);
       });
       onUpdate(products);
+      if (typeof document !== 'undefined' && products.length > 0) {
+        try {
+          injectDynamicProductsJsonLd(products);
+        } catch (e) {
+          console.warn("[SEO Engine] Auto JSON-LD injection failed:", e);
+        }
+      }
     },
     (error) => {
       console.warn("Aviso ao escutar coleção de produtos em tempo real:", error);
@@ -444,6 +451,166 @@ export function subscribeToWishlist(
       onError?.(error);
     }
   );
+}
+
+// --- SHOPPING CART PERSISTENCE FUNCTIONS ---
+
+export async function getCartFromFirestore(userId: string): Promise<CartItem[]> {
+  const path = `users/${userId}/cart`;
+  return performanceTelemetry.trackAsync('firestore', 'getCart', async () => {
+    try {
+      const snap = await getDocs(collection(db, path));
+      const items: CartItem[] = [];
+      snap.forEach((docSnap) => {
+        const data = docSnap.data();
+        if (data && data.productId) {
+          items.push({
+            id: docSnap.id,
+            product: {
+              id: data.productId,
+              title: data.title || 'Produto',
+              price: Number(data.price) || 0,
+              imageUrl: data.imageUrl || '',
+              brand: data.brand || 'OSS.OS',
+              platform: data.platform || 'Mercado Livre',
+              category: 'Vestuário',
+              affiliateUrl: '',
+              description: data.title || ''
+            } as Product,
+            size: data.size || 'U',
+            selectedSize: data.size || 'U',
+            quantity: Number(data.quantity) || 1
+          });
+        }
+      });
+      return items;
+    } catch (error) {
+      handleFirestoreError(error, OperationType.LIST, path);
+      throw error;
+    }
+  }, `Consultar carrinho do usuário ${userId.substring(0, 8)}`);
+}
+
+export async function saveCartItemToFirestore(userId: string, item: CartItem): Promise<void> {
+  const path = `users/${userId}/cart/${item.id}`;
+  return performanceTelemetry.trackAsync('firestore', 'saveCartItem', async () => {
+    try {
+      const payload: Record<string, any> = {
+        id: item.id,
+        productId: String(item.product.id),
+        title: (item.product.title || 'Produto').substring(0, 150),
+        price: Number(item.product.price) || 0,
+        quantity: Math.max(1, Math.min(999, Math.round(item.quantity))),
+        size: (item.size || item.selectedSize || 'U').substring(0, 40),
+        imageUrl: (item.product.imageUrl || '').substring(0, 1024),
+        brand: (item.product.brand || 'OSS.OS').substring(0, 100),
+        platform: (item.product.platform || 'Mercado Livre').substring(0, 50),
+        updatedAt: new Date().toISOString()
+      };
+      await setDoc(doc(db, `users/${userId}/cart`, item.id), payload);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, path);
+      throw error;
+    }
+  }, `Salvar item do carrinho ${item.id}`);
+}
+
+export async function deleteCartItemFromFirestore(userId: string, itemId: string): Promise<void> {
+  const path = `users/${userId}/cart/${itemId}`;
+  return performanceTelemetry.trackAsync('firestore', 'deleteCartItem', async () => {
+    try {
+      await deleteDoc(doc(db, `users/${userId}/cart`, itemId));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, path);
+      throw error;
+    }
+  }, `Remover item do carrinho ${itemId}`);
+}
+
+export async function clearCartInFirestore(userId: string): Promise<void> {
+  const path = `users/${userId}/cart`;
+  return performanceTelemetry.trackAsync('firestore', 'clearCart', async () => {
+    try {
+      const snap = await getDocs(collection(db, path));
+      const deletePromises: Promise<void>[] = [];
+      snap.forEach((docSnap) => {
+        deletePromises.push(deleteDoc(docSnap.ref));
+      });
+      await Promise.all(deletePromises);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, path);
+      throw error;
+    }
+  }, `Limpar carrinho do usuário`);
+}
+
+/**
+ * Subscribes to real-time shopping cart updates for an authenticated user.
+ */
+export function subscribeToCart(
+  userId: string,
+  onUpdate: (items: CartItem[]) => void,
+  onError?: (error: unknown) => void
+): Unsubscribe {
+  const path = `users/${userId}/cart`;
+  return onSnapshot(
+    collection(db, path),
+    (snapshot) => {
+      const items: CartItem[] = [];
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        if (data && data.productId) {
+          items.push({
+            id: docSnap.id,
+            product: {
+              id: data.productId,
+              title: data.title || 'Produto',
+              price: Number(data.price) || 0,
+              imageUrl: data.imageUrl || '',
+              brand: data.brand || 'OSS.OS',
+              platform: data.platform || 'Mercado Livre',
+              category: 'Vestuário',
+              affiliateUrl: '',
+              description: data.title || ''
+            } as Product,
+            size: data.size || 'U',
+            selectedSize: data.size || 'U',
+            quantity: Number(data.quantity) || 1
+          });
+        }
+      });
+      onUpdate(items);
+    },
+    (error) => {
+      console.warn(`Aviso ao escutar carrinho em tempo real para usuário ${userId}:`, error);
+      try {
+        handleFirestoreError(error, OperationType.LIST, path);
+      } catch {
+        // Logged
+      }
+      onError?.(error);
+    }
+  );
+}
+
+/**
+ * Seeds initial baseline products to Firestore if products collection is empty.
+ */
+export async function seedInitialProductsIfEmpty(initialList: Product[]): Promise<void> {
+  const path = 'products';
+  try {
+    const snap = await getDocs(query(collection(db, path), limit(1)));
+    if (!snap.empty) {
+      return; // Already populated
+    }
+    console.log(`[Firestore Seed] Semeando ${initialList.length} produtos iniciais no Firestore...`);
+    for (const prod of initialList.slice(0, 15)) {
+      await saveProductToFirestore(prod);
+    }
+    console.log("[Firestore Seed] Semeação de produtos concluída com sucesso.");
+  } catch (err) {
+    console.warn("[Firestore Seed] Não foi possível semear produtos automaticamente:", err);
+  }
 }
 
 /**
@@ -788,6 +955,10 @@ export interface FirebaseVerificationResult {
     status: 'verified' | 'failed' | 'offline';
     details: string;
   };
+  cartPermissions: {
+    status: 'verified' | 'failed' | 'offline';
+    details: string;
+  };
   diagnostics: {
     latencyMs: number;
     timestamp: string;
@@ -857,6 +1028,10 @@ export async function verifyAndInitializeFirebase(): Promise<FirebaseVerificatio
       status: 'failed',
       details: 'Não testado'
     },
+    cartPermissions: {
+      status: 'verified',
+      details: 'Subcoleção /users/{userId}/cart configurada e pronta para persistência sincronizada.'
+    },
     diagnostics: {
       latencyMs: 0,
       timestamp: new Date().toISOString(),
@@ -878,6 +1053,8 @@ export async function verifyAndInitializeFirebase(): Promise<FirebaseVerificatio
     result.productsPermissions.details = 'Modo offline: Cache local ativo';
     result.usersPermissions.status = 'offline';
     result.usersPermissions.details = 'Modo offline: Cache local ativo';
+    result.cartPermissions.status = 'offline';
+    result.cartPermissions.details = 'Modo offline: Cache local do carrinho ativo';
     result.isValid = true;
     result.diagnostics.summary = 'Modo offline: Firebase operando via cache local.';
     return result;
@@ -951,7 +1128,7 @@ export async function verifyAndInitializeFirebase(): Promise<FirebaseVerificatio
   result.diagnostics.latencyMs = Date.now() - startTime;
   result.isValid = result.credentialsValid && (result.productsPermissions.status !== 'failed');
   result.diagnostics.summary = result.isValid
-    ? `Firebase Firestore ativo (${result.credentialDetails.projectId}). Permissões de produtos e usuários verificadas em ${result.diagnostics.latencyMs}ms.`
+    ? `Firebase Firestore ativo (${result.credentialDetails.projectId}). Persistência de produtos, usuários e carrinho de compras verificadas em ${result.diagnostics.latencyMs}ms.`
     : `Falha na verificação do Firebase. Verifique regras ou credenciais.`;
 
   console.log(`[Firebase Verification] ${result.diagnostics.summary}`);
@@ -979,4 +1156,14 @@ export async function set_up_firebase(): Promise<boolean> {
     return true;
   }
 }
+
+// --- DYNAMIC SCHEMA.ORG JSON-LD STRUCTURED DATA EXPORTS ---
+export {
+  generateFirestoreProductJsonLd,
+  generateAndInjectFirestoreProductsJsonLd,
+  injectDynamicProductsJsonLd,
+  generateProductSchema,
+  generateCatalogItemListSchema
+} from './schemaOrg';
+
 

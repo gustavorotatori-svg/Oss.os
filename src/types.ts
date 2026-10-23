@@ -252,6 +252,7 @@ export interface CartItem {
   id: string; // unique ID for product-size combinations in the cart
   product: Product;
   size: string;
+  selectedSize?: string;
   quantity: number;
 }
 

@@ -19,6 +19,7 @@ import { PartnerGyms } from './PartnerGyms';
 import { AIProductFilter } from './AIProductFilter';
 import KimonoFoldingLoader from './KimonoFoldingLoader';
 import { CinematicHero } from './CinematicHero';
+import { ThreeBJJHero } from './ThreeBJJHero';
 import { OfflineCatalogBar } from './OfflineCatalogBar';
 
 interface VirtualProductRowProps {
@@ -206,7 +207,7 @@ export const ShopCatalogView: React.FC<ShopCatalogViewProps> = ({
   const [showAiFilterModal, setShowAiFilterModal] = useState(false);
   const [showSizeCalculator, setShowSizeCalculator] = useState(false);
   const [isFiltering, setIsFiltering] = useState(false);
-  const [isManualDemoActive, setIsManualDemoActive] = useState(false);
+  const [heroMode, setHeroMode] = useState<'3d' | 'cinematic'>('3d');
   const isFirstMount = useRef(true);
 
   // Responsive column count based on viewport/container width
@@ -314,14 +315,65 @@ export const ShopCatalogView: React.FC<ShopCatalogViewProps> = ({
   return (
     <div className="w-full space-y-8 pb-16">
       
-      {/* 0. CINEMATIC BJJ HERO (REEL CINEMATOGRÁFICO DO TATAME) */}
-      <CinematicHero
-        productList={productList}
-        onQuickView={onQuickView}
-        onNavigate={onNavigate}
-        onSelectCategory={setSelectedCategory}
-        onOpenFilterDrawer={onOpenFilterDrawer}
-      />
+      {/* 0. HERO SECTION — INTERACTIVE 3D STUDIO PBR & CINE REEL */}
+      <section className="w-full">
+        {/* Experience Mode Toggle Bar */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-3 pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Experiência de Destaque:
+            </span>
+          </div>
+
+          <div className="inline-flex items-center p-1 rounded-2xl bg-zinc-900/90 border border-zinc-800 shadow-xl backdrop-blur-md self-start sm:self-auto">
+            <button
+              onClick={() => setHeroMode('3d')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                heroMode === '3d'
+                  ? 'bg-emerald-500 text-zinc-950 shadow-md shadow-emerald-500/20'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Studio 3D Interativo</span>
+              <span className="hidden sm:inline-block px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-black/30">Three.js PBR</span>
+            </button>
+
+            <button
+              onClick={() => setHeroMode('cinematic')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                heroMode === 'cinematic'
+                  ? 'bg-emerald-500 text-zinc-950 shadow-md shadow-emerald-500/20'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              <Eye className="w-3.5 h-3.5" />
+              <span>Cine Reel do Tatame</span>
+            </button>
+          </div>
+        </div>
+
+        {heroMode === '3d' ? (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <ThreeBJJHero
+              productList={productList}
+              onQuickView={onQuickView}
+              onNavigate={onNavigate}
+              onSelectCategory={setSelectedCategory}
+              onOpenFilterDrawer={onOpenFilterDrawer}
+            />
+          </div>
+        ) : (
+          <CinematicHero
+            productList={productList}
+            onQuickView={onQuickView}
+            onNavigate={onNavigate}
+            onSelectCategory={setSelectedCategory}
+            onOpenFilterDrawer={onOpenFilterDrawer}
+          />
+        )}
+      </section>
 
       {/* 1. DEAL HIGHLIGHT BANNER */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

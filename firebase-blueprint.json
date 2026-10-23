@@ -74,7 +74,17 @@
         "isBestPrice": { "type": "boolean" },
         "rating": { "type": "number" },
         "isCurated": { "type": "boolean" },
-        "isFeatured": { "type": "boolean" }
+        "isFeatured": { "type": "boolean" },
+        "seoKeywords": { "type": "array" },
+        "seoOptimizedTitle": { "type": "string" },
+        "seoOptimizedDescription": { "type": "string" },
+        "seoScore": { "type": "number" },
+        "seoSearchIntent": { "type": "string" },
+        "salesCount": { "type": "number" },
+        "popularity": { "type": "number" },
+        "trendScore": { "type": "number" },
+        "practitionerLevel": { "type": "string" },
+        "productType": { "type": "string" }
       },
       "required": ["title", "price", "imageUrl", "affiliateUrl", "platform", "category"]
     },
