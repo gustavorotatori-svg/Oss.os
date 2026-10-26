@@ -1,11 +1,6 @@
 import React, { useEffect } from 'react';
 import { Product } from '../types';
-import { 
-  generateProductSchema, 
-  generateCatalogItemListSchema, 
-  injectProductJsonLd, 
-  removeProductJsonLd 
-} from '../lib/schemaOrg';
+import { generateProductSchema, generateCatalogItemListSchema } from '../lib/schemaOrg';
 
 export interface SEOHeadProps {
   title?: string;
@@ -48,19 +43,10 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       effectiveOgType = 'product';
       const formattedPrice = selectedProduct.price ? `R$ ${selectedProduct.price.toFixed(2)}` : 'Preço Especial';
       const brandStr = selectedProduct.brand ? ` (${selectedProduct.brand})` : '';
-      const productTitle = selectedProduct.seoOptimizedTitle || selectedProduct.title;
       
-      dynamicTitle = `${productTitle}${brandStr} | Menor Preço 100% Grátis no OSS.OS`;
-      dynamicDesc = selectedProduct.seoOptimizedDescription || `Compare o menor preço para ${selectedProduct.title}. Ofertas a partir de ${formattedPrice} em lojas oficiais e marketplaces. Comparação 100% gratuita, ficha técnica completa e histórico de preços no OSS.OS.`;
-      
-      let kwStr = '';
-      if (Array.isArray(selectedProduct.seoKeywords) && selectedProduct.seoKeywords.length > 0) {
-        kwStr = selectedProduct.seoKeywords.join(', ');
-      } else if (typeof selectedProduct.seoKeywords === 'string') {
-        kwStr = selectedProduct.seoKeywords;
-      }
-      dynamicKeywords = kwStr || `${selectedProduct.title}, kimono ${selectedProduct.brand || 'bjj'}, preco ${selectedProduct.title}, comprar ${selectedProduct.title}, ficha tecnica kimono, comparador kimono jiu jitsu`;
-      
+      dynamicTitle = `${selectedProduct.title}${brandStr} | Menor Preço 100% Grátis no OSS.OS`;
+      dynamicDesc = `Compare o menor preço para ${selectedProduct.title}. Ofertas a partir de ${formattedPrice} em lojas oficiais e marketplaces. Comparação 100% gratuita, ficha técnica completa e histórico de preços no OSS.OS.`;
+      dynamicKeywords = `${selectedProduct.title}, kimono ${selectedProduct.brand || 'bjj'}, preco ${selectedProduct.title}, comprar ${selectedProduct.title}, ficha tecnica kimono, comparador kimono jiu jitsu`;
       if (selectedProduct.imageUrl) {
         dynamicImage = selectedProduct.imageUrl;
       }
@@ -358,19 +344,6 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
     };
 
     injectJSONLD();
-
-    // Dynamically inject/clean the dedicated Product JSON-LD script for Google Rich Results
-    if (selectedProduct) {
-      injectProductJsonLd(selectedProduct);
-    } else {
-      removeProductJsonLd();
-    }
-
-    return () => {
-      if (!selectedProduct) {
-        removeProductJsonLd();
-      }
-    };
   }, [title, description, keywords, canonicalUrl, ogImage, ogType, currentView, selectedProduct, selectedCategory, searchQuery, products]);
 
   return null;

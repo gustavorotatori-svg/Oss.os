@@ -196,7 +196,6 @@ import { NotificationPermissionModal } from './components/NotificationPermission
 import { NotificationOnboardingModal } from './components/NotificationOnboardingModal';
 import { LGPDBanner } from './components/LGPDBanner';
 import { usePersistence } from './hooks/usePersistence';
-import { useProductJsonLd } from './hooks/useProductJsonLd';
 import { LGPDModal } from './components/LGPDModal';
 import { SEOHead } from './components/SEOHead';
 import { LGPDConsentState } from './data/legalPolicies';
@@ -2358,33 +2357,6 @@ export default function App() {
     if (!selectedReviewProduct) return null;
     return productList.find(p => p.id === selectedReviewProduct.id) || selectedReviewProduct;
   }, [selectedReviewProduct, productList]);
-
-  // Read product ID from URL query parameters (e.g. ?product=id) if shared or directly visited
-  const urlProductId = useMemo(() => {
-    if (typeof window === 'undefined') return null;
-    const searchParams = new URLSearchParams(location.search);
-    return searchParams.get('product');
-  }, [location.search]);
-
-  // Determine current active product entity or ID for SEO and Schema.org JSON-LD structured data injection
-  const selectedProductForSeo = useMemo(() => {
-    if (activeGalleryProduct) return activeGalleryProduct;
-    if (activeProduct) return activeProduct;
-    if (activeReviewProduct) return activeReviewProduct;
-    if (urlProductId) {
-      return productList.find(p => p.id === urlProductId) || urlProductId;
-    }
-    return null;
-  }, [activeGalleryProduct, activeProduct, activeReviewProduct, urlProductId, productList]);
-
-  // Hook that dynamically generates and injects Schema.org JSON-LD structured data into the page head
-  // whenever a product is selected or loaded, ensuring all Firestore SEO fields are mapped correctly
-  useProductJsonLd(selectedProductForSeo, {
-    fallbackProducts: productList,
-    onInjected: (ld) => {
-      console.log(`[SEO JSON-LD] Injetado Schema.org Product para: "${ld.name}"`);
-    }
-  });
 
   const handleAddProductReview = async (productId: string, reviewData: Omit<Review, 'id'>) => {
     try {
@@ -7033,7 +7005,7 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
       {/* Advanced Dynamic SEO & Schema.org JSON-LD Manager (100% Free Organic Engine) */}
       <SEOHead
         currentView={view}
-        selectedProduct={typeof selectedProductForSeo === 'object' ? selectedProductForSeo : (selectedGalleryProduct || selectedCheckoutProduct || undefined)}
+        selectedProduct={selectedGalleryProduct || selectedCheckoutProduct || undefined}
         selectedCategory={selectedCategory !== 'all' ? selectedCategory : undefined}
         searchQuery={searchQuery || undefined}
         products={productList}
