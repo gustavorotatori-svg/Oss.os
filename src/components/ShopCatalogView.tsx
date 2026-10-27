@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useTranslation } from 'react-i18next';
-import { List as VirtualList, useListRef } from 'react-window';
 import { 
   ShoppingBag, Flame, Sparkles, Filter, SlidersHorizontal, 
   RotateCcw, ArrowRight, ShieldCheck, Award, BookOpen, 
-  ExternalLink, Layers, Search, ChevronRight, Check, Eye, Zap, RefreshCw
+  ExternalLink, Layers, Search, ChevronRight, Check, Eye
 } from 'lucide-react';
 import { Category, Product } from '../types';
 import PremiumProductCard from './PremiumProductCard';
@@ -20,92 +18,6 @@ import { AIProductFilter } from './AIProductFilter';
 import KimonoFoldingLoader from './KimonoFoldingLoader';
 import { CinematicHero } from './CinematicHero';
 import { OfflineCatalogBar } from './OfflineCatalogBar';
-
-interface VirtualProductRowProps {
-  index: number;
-  style: React.CSSProperties;
-  ariaAttributes?: {
-    "aria-posinset": number;
-    "aria-setsize": number;
-    role: "listitem";
-  };
-  rows: Product[][];
-  columnCount: number;
-  onQuickView: (product: Product) => void;
-  onCheckout: (product: Product) => void;
-  onAddToCart?: (product: Product) => void;
-  wishlist: Set<string>;
-  onToggleWishlist: (id: string) => void;
-  comparedProductIds?: Set<string>;
-  onToggleCompare: (product: Product) => void;
-  wishlistAlerts?: Set<string>;
-  onToggleAlert?: (productId: string, targetPrice?: number, channels?: { push: boolean; email: boolean; app: boolean }, notificationEmail?: string) => void;
-  onOpenReviews?: (product: Product) => void;
-  onOpenSeoOptimizer?: (productId?: string) => void;
-}
-
-const VirtualProductRow: React.FC<VirtualProductRowProps> = ({
-  index,
-  style,
-  rows,
-  columnCount,
-  onQuickView,
-  onCheckout,
-  onAddToCart,
-  wishlist,
-  onToggleWishlist,
-  comparedProductIds,
-  onToggleCompare,
-  wishlistAlerts,
-  onToggleAlert,
-  onOpenReviews,
-  onOpenSeoOptimizer
-}) => {
-  const rowProducts = rows[index] || [];
-
-  return (
-    <div
-      style={{
-        ...style,
-        paddingBottom: '24px',
-        boxSizing: 'border-box'
-      }}
-      className="w-full"
-    >
-      <div
-        className="grid gap-6 h-full"
-        style={{
-          gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`
-        }}
-      >
-        {rowProducts.map((product) => (
-          <div key={product.id} className="h-full">
-            <PremiumProductCard
-              product={product}
-              onQuickView={onQuickView}
-              onCheckout={onCheckout}
-              onQuickBuy={onCheckout}
-              onAddToCart={onAddToCart}
-              isInWishlist={wishlist.has(product.id)}
-              onToggleWishlist={onToggleWishlist}
-              isComparing={comparedProductIds ? comparedProductIds.has(product.id) : false}
-              onToggleCompare={onToggleCompare}
-              isAlertActive={wishlistAlerts?.has(product.id)}
-              onToggleAlert={onToggleAlert}
-              onOpenReviews={onOpenReviews}
-              onOpenSeoOptimizer={onOpenSeoOptimizer ? (p) => onOpenSeoOptimizer(p.id) : undefined}
-            />
-          </div>
-        ))}
-        {rowProducts.length < columnCount &&
-          Array.from({ length: columnCount - rowProducts.length }).map((_, i) => (
-            <div key={`empty-slot-${i}`} className="hidden sm:block" />
-          ))
-        }
-      </div>
-    </div>
-  );
-};
 
 export interface ShopCatalogViewProps {
   productList: Product[];
@@ -190,44 +102,11 @@ export const ShopCatalogView: React.FC<ShopCatalogViewProps> = ({
   onOpenReviews,
   onOpenSeoOptimizer
 }) => {
-  const { t } = useTranslation();
-  const listRef = useListRef();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [viewMode, setViewMode] = useState<'virtualized' | 'grid'>('virtualized');
-  const [isVirtualizedAll, setIsVirtualizedAll] = useState(false);
-  const [columnCount, setColumnCount] = useState<number>(() => {
-    if (typeof window === 'undefined') return 4;
-    const w = window.innerWidth;
-    if (w < 640) return 1;
-    if (w < 768) return 2;
-    if (w < 1024) return 3;
-    return 4;
-  });
   const [showAiFilterModal, setShowAiFilterModal] = useState(false);
   const [showSizeCalculator, setShowSizeCalculator] = useState(false);
   const [isFiltering, setIsFiltering] = useState(false);
   const [isManualDemoActive, setIsManualDemoActive] = useState(false);
   const isFirstMount = useRef(true);
-
-  // Responsive column count based on viewport/container width
-  useEffect(() => {
-    const updateColumns = () => {
-      const elWidth = containerRef.current?.clientWidth || (typeof window !== 'undefined' ? window.innerWidth : 1200);
-      if (elWidth < 600) {
-        setColumnCount(1);
-      } else if (elWidth < 840) {
-        setColumnCount(2);
-      } else if (elWidth < 1140) {
-        setColumnCount(3);
-      } else {
-        setColumnCount(4);
-      }
-    };
-
-    updateColumns();
-    window.addEventListener('resize', updateColumns);
-    return () => window.removeEventListener('resize', updateColumns);
-  }, []);
 
   // Monitor filter criteria changes to trigger the Kimono Folding Animation
   const filterKey = useMemo(() => {
@@ -263,42 +142,9 @@ export const ShopCatalogView: React.FC<ShopCatalogViewProps> = ({
     setIsFiltering(true);
     const timer = setTimeout(() => {
       setIsFiltering(false);
-    }, 120);
+    }, 750);
     return () => clearTimeout(timer);
   }, [filterKey]);
-
-  // Virtualization rows grouping & dynamic dimension calculations
-  const displayProducts = useMemo(() => {
-    return isVirtualizedAll ? filteredProducts : paginatedProducts;
-  }, [isVirtualizedAll, filteredProducts, paginatedProducts]);
-
-  const rows = useMemo(() => {
-    const items = displayProducts || [];
-    const chunked: Product[][] = [];
-    for (let i = 0; i < items.length; i += columnCount) {
-      chunked.push(items.slice(i, i + columnCount));
-    }
-    return chunked;
-  }, [displayProducts, columnCount]);
-
-  const rowHeight = useMemo(() => {
-    if (columnCount === 1) return 590;
-    if (columnCount === 2) return 570;
-    return 560;
-  }, [columnCount]);
-
-  const listHeight = useMemo(() => {
-    if (rows.length === 0) return 320;
-    if (rows.length === 1) return rowHeight + 10;
-    const maxViewport = typeof window !== 'undefined' && window.innerHeight ? Math.max(520, Math.min(800, window.innerHeight - 200)) : 740;
-    return Math.min(rows.length * rowHeight, maxViewport);
-  }, [rows.length, rowHeight]);
-
-  useEffect(() => {
-    if (listRef.current?.scrollToRow) {
-      listRef.current.scrollToRow({ index: 0, behavior: 'instant' });
-    }
-  }, [filterKey, currentPage, isVirtualizedAll, viewMode]);
 
   const clearFilters = () => {
     setSearchQuery('');
@@ -418,12 +264,10 @@ export const ShopCatalogView: React.FC<ShopCatalogViewProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-zinc-200 dark:border-zinc-800">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm font-black uppercase tracking-tight text-black dark:text-white font-mono">
-              {t('catalog.results_header', { defaultValue: 'Resultados do Acervo' })}
+              Resultados do Acervo
             </span>
             <span className="text-xs font-mono font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-2 py-0.5 border border-zinc-200 dark:border-zinc-700">
-              {filteredProducts.length === 1 
-                ? t('catalog.items_count', { count: filteredProducts.length, defaultValue: '1 produto' })
-                : t('catalog.items_count_plural', { count: filteredProducts.length, defaultValue: `${filteredProducts.length} produtos` })}
+              {filteredProducts.length} {filteredProducts.length === 1 ? 'produto' : 'produtos'}
             </span>
 
             {/* Filter loading state badge */}
@@ -436,16 +280,14 @@ export const ShopCatalogView: React.FC<ShopCatalogViewProps> = ({
                   className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/60 animate-pulse"
                 >
                   <Flame size={12} className="animate-spin text-red-600" />
-                  <span>{t('catalog.filtering', { defaultValue: 'Filtrando catálogo...' })}</span>
+                  <span>Filtrando catálogo...</span>
                 </motion.span>
               )}
             </AnimatePresence>
           </div>
 
           <div className="flex items-center gap-3 text-xs font-mono">
-            <span className="text-zinc-500">
-              {t('catalog.pagination', { page: currentPage, total: Math.max(1, totalPages), defaultValue: `Página ${currentPage} de ${Math.max(1, totalPages)}` })}
-            </span>
+            <span className="text-zinc-500">Página {currentPage} de {Math.max(1, totalPages)}</span>
           </div>
         </div>
 
@@ -480,10 +322,10 @@ export const ShopCatalogView: React.FC<ShopCatalogViewProps> = ({
               </div>
               <div className="space-y-1 max-w-md mx-auto">
                 <h3 className="text-base font-black uppercase text-black dark:text-white font-mono">
-                  {t('catalog.no_products_found', { defaultValue: 'Nenhum equipamento encontrado' })}
+                  Nenhum equipamento encontrado
                 </h3>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed font-sans">
-                  {t('catalog.no_products_desc', { defaultValue: 'Não encontramos produtos que correspondam a todos os filtros selecionados. Tente ajustar a faixa de preço, marcas ou categoria.' })}
+                  Não encontramos produtos que correspondam a todos os filtros selecionados. Tente ajustar a faixa de preço, marcas ou categoria.
                 </p>
               </div>
               <div className="pt-2">
@@ -493,82 +335,8 @@ export const ShopCatalogView: React.FC<ShopCatalogViewProps> = ({
                   className="px-5 py-2.5 bg-red-600 hover:bg-red-500 text-white font-mono text-xs font-black uppercase tracking-wider transition-colors inline-flex items-center gap-2"
                 >
                   <RotateCcw size={14} />
-                  <span>{t('filter.clear_all', { defaultValue: 'Limpar Todos os Filtros' })}</span>
+                  <span>Limpar Todos os Filtros</span>
                 </button>
-              </div>
-            </motion.div>
-          ) : viewMode === 'virtualized' ? (
-            <motion.div
-              key="kimono-products-virtualized"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="space-y-4"
-            >
-              <div 
-                ref={containerRef}
-                className="w-full relative border border-zinc-200 dark:border-zinc-800 bg-zinc-50/40 dark:bg-zinc-950/40 p-3 sm:p-5 rounded-xl shadow-xs"
-              >
-                {/* Virtualization Performance Info Bar */}
-                <div className="flex flex-wrap items-center justify-between gap-3 pb-3 mb-4 border-b border-zinc-200 dark:border-zinc-800 text-xs font-mono">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/25 font-bold uppercase text-[10px] tracking-wider">
-                      <Zap size={11} className="fill-green-500 text-green-500" />
-                      Virtualização Ativa (react-window)
-                    </span>
-                    <span className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                      {displayProducts.length} produtos • {rows.length} {rows.length === 1 ? 'linha' : 'linhas'} • Apenas nós visíveis no DOM
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setIsVirtualizedAll(prev => !prev)}
-                      className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 hover:border-black dark:hover:border-white transition-colors cursor-pointer"
-                      title="Alternar entre todo o catálogo filtrado ou página atual"
-                    >
-                      {isVirtualizedAll ? `Todo o Acervo (${filteredProducts.length})` : `Página Atual (${paginatedProducts.length})`}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setViewMode('grid')}
-                      className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
-                      title="Alternar para renderização de Grid DOM sem virtualização"
-                    >
-                      Grid Padrão
-                    </button>
-                  </div>
-                </div>
-
-                {/* react-window VirtualList */}
-                <VirtualList
-                  listRef={listRef}
-                  rowCount={rows.length}
-                  rowHeight={rowHeight}
-                  rowComponent={VirtualProductRow}
-                  rowProps={{
-                    rows,
-                    columnCount,
-                    onQuickView,
-                    onCheckout,
-                    onAddToCart,
-                    wishlist,
-                    onToggleWishlist,
-                    comparedProductIds,
-                    onToggleCompare,
-                    wishlistAlerts,
-                    onToggleAlert,
-                    onOpenReviews,
-                    onOpenSeoOptimizer
-                  }}
-                  style={{
-                    height: listHeight,
-                    width: '100%'
-                  }}
-                  className="focus:outline-none overflow-y-auto pr-1"
-                  overscanCount={2}
-                />
               </div>
             </motion.div>
           ) : (
@@ -577,64 +345,32 @@ export const ShopCatalogView: React.FC<ShopCatalogViewProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="space-y-4"
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
             >
-              <div className="flex items-center justify-between pb-2 border-b border-zinc-200 dark:border-zinc-800 text-xs font-mono">
-                <span className="text-zinc-500 text-[11px]">
-                  Modo Grid Convencional ({paginatedProducts.length} itens renderizados)
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setViewMode('virtualized')}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-600 hover:bg-green-500 text-white font-mono text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
-                >
-                  <Zap size={11} />
-                  Ativar Virtualização (react-window)
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {(paginatedProducts || []).map((product) => (
-                  <PremiumProductCard
-                    key={product.id}
-                    product={product}
-                    onQuickView={onQuickView}
-                    onCheckout={onCheckout}
-                    onQuickBuy={onCheckout}
-                    onAddToCart={onAddToCart}
-                    isInWishlist={wishlist.has(product.id)}
-                    onToggleWishlist={onToggleWishlist}
-                    isComparing={comparedProductIds ? comparedProductIds.has(product.id) : false}
-                    onToggleCompare={onToggleCompare}
-                    isAlertActive={wishlistAlerts?.has(product.id)}
-                    onToggleAlert={onToggleAlert}
-                    onOpenReviews={onOpenReviews}
-                    onOpenSeoOptimizer={onOpenSeoOptimizer ? (p) => onOpenSeoOptimizer(p.id) : undefined}
-                  />
-                ))}
-              </div>
+              {(paginatedProducts || []).map((product) => (
+                <PremiumProductCard
+                  key={product.id}
+                  product={product}
+                  onQuickView={onQuickView}
+                  onCheckout={onCheckout}
+                  onQuickBuy={onCheckout}
+                  onAddToCart={onAddToCart}
+                  isInWishlist={wishlist.has(product.id)}
+                  onToggleWishlist={onToggleWishlist}
+                  isComparing={comparedProductIds ? comparedProductIds.has(product.id) : false}
+                  onToggleCompare={onToggleCompare}
+                  isAlertActive={wishlistAlerts?.has(product.id)}
+                  onToggleAlert={onToggleAlert}
+                  onOpenReviews={onOpenReviews}
+                  onOpenSeoOptimizer={onOpenSeoOptimizer ? (p) => onOpenSeoOptimizer(p.id) : undefined}
+                />
+              ))}
             </motion.div>
           )}
         </AnimatePresence>
 
         {/* Pagination Controls */}
-        {viewMode === 'virtualized' && isVirtualizedAll ? (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6 border-t border-zinc-200 dark:border-zinc-800 text-xs font-mono">
-            <span className="text-zinc-500">
-              Modo Contínuo Virtualizado: Todos os {filteredProducts.length} produtos carregados no rolador com virtualização DOM de alta performance.
-            </span>
-            <button
-              type="button"
-              onClick={() => {
-                setIsVirtualizedAll(false);
-                setCurrentPage(1);
-              }}
-              className="px-4 py-2 bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 text-black dark:text-white text-xs font-mono font-bold uppercase hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-            >
-              Alternar para Navegação Paginada
-            </button>
-          </div>
-        ) : totalPages > 1 ? (
+        {totalPages > 1 && (
           <div className="flex items-center justify-center gap-2 pt-8">
             <button
               type="button"
@@ -642,7 +378,7 @@ export const ShopCatalogView: React.FC<ShopCatalogViewProps> = ({
               disabled={currentPage === 1}
               className="px-4 py-2 bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 text-black dark:text-white text-xs font-mono font-bold uppercase disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
             >
-              {t('common.back', { defaultValue: 'Anterior' })}
+              Anterior
             </button>
 
             <div className="flex items-center gap-1">
@@ -672,10 +408,10 @@ export const ShopCatalogView: React.FC<ShopCatalogViewProps> = ({
               disabled={currentPage === totalPages}
               className="px-4 py-2 bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 text-black dark:text-white text-xs font-mono font-bold uppercase disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
             >
-              {t('common.next', { defaultValue: 'Próxima' })}
+              Próxima
             </button>
           </div>
-        ) : null}
+        )}
 
       </div>
 

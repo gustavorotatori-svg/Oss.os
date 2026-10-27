@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useTranslation } from 'react-i18next';
 import { 
   Shirt, 
   ShieldAlert, 
@@ -36,7 +35,6 @@ export const CategoryHierarchyNav: React.FC<CategoryHierarchyNavProps> = ({
   setSelectedSubCategories = (_subs: string[] | ((prev: string[]) => string[])) => {},
   className = ''
 }) => {
-  const { t } = useTranslation();
   const [activeGroupTab, setActiveGroupTab] = useState<string | null>(null);
   const [subSearchQuery, setSubSearchQuery] = useState<string>('');
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
@@ -160,20 +158,20 @@ export const CategoryHierarchyNav: React.FC<CategoryHierarchyNavProps> = ({
         <div className="flex items-center gap-2.5">
           <div className="w-2.5 h-2.5 bg-red-600 rounded-none transform rotate-45" />
           <span className="text-[10px] font-mono font-black uppercase tracking-[0.2em] text-zinc-900 dark:text-white">
-            {t('nav.categories', { defaultValue: 'SISTEMA DE CATEGORIAS BJJ' })}
+            SISTEMA DE CATEGORIAS BJJ
           </span>
           <span className="hidden sm:inline-block text-[9px] font-mono text-zinc-400 dark:text-zinc-500 border-l border-zinc-300 dark:border-zinc-700 pl-2.5">
-            {t('categories.mat_armor', { defaultValue: 'Hierarquia Técnica do Tatame' })}
+            Hierarquia Técnica do Tatame
           </span>
         </div>
 
         {/* Active Breadcrumb / Filter Status */}
         <div className="flex items-center gap-2 text-[10px] font-mono">
           <div className="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
-            <span className="text-zinc-400">OSS</span>
+            <span className="text-zinc-400">Portal</span>
             <ChevronRight size={10} className="text-zinc-400" />
             <span className={activeMainCategory ? 'text-zinc-900 dark:text-zinc-200 font-bold' : 'text-red-600 font-bold'}>
-              {selectedCategory === 'All' ? t('categories.All', { defaultValue: 'Todos os Produtos' }) : t('categories.' + selectedCategory, { defaultValue: selectedCategory })}
+              {selectedCategory === 'All' ? 'Todos os Produtos' : selectedCategory}
             </span>
             {selectedSubCategories.length > 0 && (
               <>
@@ -192,11 +190,11 @@ export const CategoryHierarchyNav: React.FC<CategoryHierarchyNavProps> = ({
                 setSelectedSubCategories([]);
                 setActiveGroupTab(null);
               }}
-              className="ml-2 px-2 py-0.5 text-[9px] font-mono uppercase bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20 transition-colors flex items-center gap-1 cursor-pointer"
-              title="Limpar filtros"
+              className="ml-2 px-2 py-0.5 text-[9px] font-mono uppercase bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20 transition-colors flex items-center gap-1"
+              title="Limpar todos os filtros de categoria"
             >
               <X size={10} />
-              <span>{t('common.cancel', { defaultValue: 'Limpar' })}</span>
+              <span>Limpar</span>
             </button>
           )}
 
@@ -235,7 +233,7 @@ export const CategoryHierarchyNav: React.FC<CategoryHierarchyNavProps> = ({
                 </span>
               </div>
               <div className="font-mono font-bold text-xs uppercase tracking-wider text-zinc-900 dark:text-white flex items-center justify-between">
-                <span>{t('categories.All', { defaultValue: 'Todos' })}</span>
+                <span>Todos</span>
                 {selectedCategory === 'All' && <Check size={12} className="text-red-600 shrink-0" />}
               </div>
               <p className="text-[10px] text-zinc-500 dark:text-zinc-400 line-clamp-1 mt-0.5">
@@ -275,7 +273,7 @@ export const CategoryHierarchyNav: React.FC<CategoryHierarchyNavProps> = ({
                     </div>
                   </div>
                   <div className="font-mono font-bold text-xs uppercase tracking-wider text-zinc-900 dark:text-white flex items-center justify-between">
-                    <span>{t('categories.' + cat.id, { defaultValue: cat.name })}</span>
+                    <span>{cat.name}</span>
                     {isSelected && <Check size={12} className="text-red-600 shrink-0" />}
                   </div>
                   <p className="text-[10px] text-zinc-500 dark:text-zinc-400 line-clamp-1 mt-0.5">

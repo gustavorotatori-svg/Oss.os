@@ -123,7 +123,6 @@ import { WolfWisdom } from '@/components/WolfWisdom';
 import { WeightComparator } from '@/components/WeightComparator';
 import { LandingFAQ } from './components/LandingFAQ';
 import { EasyExchangePolicyModal } from './components/EasyExchangePolicyModal';
-import { getProductPractitionerLevel, matchesCategoryFilter } from './lib/filterUtils';
 
 // Heavy components optimized with React.lazy to reduce initial bundle size & TTI
 const PriceHistoryChart = lazy(() => import('./components/PriceHistoryChart'));
@@ -132,9 +131,6 @@ const CatalogSeoAnalyzerModal = lazy(() => import('./components/CatalogSeoAnalyz
 import { ProductReviewModal } from './components/ProductReviewModal';
 import { FloatingCompareBar } from './components/FloatingCompareBar';
 import { DealHighlightBanner } from './components/DealHighlightBanner';
-import { ExternalShowcaseView } from './components/ExternalShowcaseView';
-import { OfferNotificationsCenter } from './components/OfferNotificationsCenter';
-import { ProfessionalFooter } from './components/ProfessionalFooter';
 import { ToastContainer } from './components/ToastContainer';
 import { AuthModal, GoogleLogoIcon, AppleLogoIcon, UserRole } from './components/AuthModal';
 import { SocialShareModal } from './components/SocialShareModal';
@@ -188,8 +184,6 @@ import {
 } from './lib/firebase';
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, User as FirebaseUser, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, OAuthProvider, sendPasswordResetEmail, sendEmailVerification } from 'firebase/auth';
 const UserDashboard = lazy(() => import('@/components/UserDashboard').then(m => ({ default: m.UserDashboard })));
-import { TechnicalLevelFilter } from './components/TechnicalLevelFilter';
-import { ThemeSelector } from './components/ThemeSelector';
 import { BlogComments } from '@/components/BlogComments';
 import { NotificationSubscription } from './components/NotificationSubscription';
 import { NotificationPermissionModal } from './components/NotificationPermissionModal';
@@ -480,7 +474,7 @@ const HeroParticles = () => {
 
 const categories: Category[] = ['Kimonos', 'Rashguards', 'Bermudas', 'Faixas', 'Protetores', 'Acessórios', 'Equipamentos de Proteção', 'Serviços', 'Suplementos'];
 
-type View = 'LANDING' | 'SHOP' | 'WISHLIST' | 'CONTACT' | 'SETTINGS' | 'DASHBOARD' | 'ABOUT' | 'TRANSPARENCY' | 'COMPARATOR' | 'EXTERNAL_SHOWCASE' | 'NOTIFICATIONS';
+type View = 'LANDING' | 'SHOP' | 'WISHLIST' | 'CONTACT' | 'SETTINGS' | 'DASHBOARD' | 'ABOUT' | 'TRANSPARENCY' | 'COMPARATOR';
 
 const bjjLegendsHall = '/images/bjj_legends_hall_1779888797302.png';
 
@@ -1394,17 +1388,10 @@ export default function App() {
 
   useEffect(() => {
     // Map path to View
-    const searchParams = new URLSearchParams(location.search);
-    const isExternalParam = searchParams.get('mode') === 'external';
-
     const path = location.pathname.substring(1).toUpperCase() || 'LANDING';
-    const validViews: View[] = ['LANDING', 'SHOP', 'WISHLIST', 'CONTACT', 'SETTINGS', 'DASHBOARD', 'ABOUT', 'TRANSPARENCY', 'COMPARATOR', 'EXTERNAL_SHOWCASE', 'NOTIFICATIONS'];
+    const validViews: View[] = ['LANDING', 'SHOP', 'WISHLIST', 'CONTACT', 'SETTINGS', 'DASHBOARD', 'ABOUT', 'TRANSPARENCY', 'COMPARATOR'];
     
-    if (isExternalParam || path === 'EXTERNAL' || path === 'EXTERNAL_SHOWCASE' || path === 'VITRINE') {
-      setView('EXTERNAL_SHOWCASE');
-    } else if (path === 'NOTIFICATIONS' || path === 'ALERTAS' || path === 'OFERTAS-ALERTAS' || path === 'NOTIFICACOES' || path === 'OFFERS') {
-      setView('NOTIFICATIONS');
-    } else if (validViews.includes(path as View)) {
+    if (validViews.includes(path as View)) {
       setView(path as View);
     } else {
       setView('LANDING');
@@ -1415,10 +1402,6 @@ export default function App() {
   }, [location]);
 
   const handleNavigate = (newView: View) => {
-    if (newView === 'EXTERNAL_SHOWCASE') {
-      navigate('/external');
-      return;
-    }
     const path = newView === 'LANDING' ? '/' : `/${newView.toLowerCase()}`;
     navigate(path);
   };
@@ -2006,30 +1989,14 @@ export default function App() {
       if (savedTheme === 'dark') return true;
       if (savedTheme === 'light') return false;
       
-      // Modo Automático (Sistema): Claro das 06h às 18h, Escuro das 18h às 24h
+      // Modo Automático (Sistema): Claro das 06h às 18h, Escuro das 18h às 06h
       const hour = new Date().getHours();
-      return hour >= 18 || hour < 6;
+      const isNight = hour >= 18 || hour < 6;
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return isNight || systemPrefersDark;
     }
     return false;
   });
-
-  const handleSelectThemePreference = (nextPreference: 'light' | 'dark' | 'system') => {
-    setThemePreference(nextPreference);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('oss_theme_preference', nextPreference);
-    }
-
-    const currentHour = new Date().getHours();
-    const isNight = currentHour >= 18 || currentHour < 6;
-    const currentMode = isNight ? 'Escuro 🌙' : 'Claro ☀️';
-
-    const modeLabels = {
-      light: 'Modo Claro ativo ☀️ (Manual)',
-      dark: 'Modo Escuro ativo 🌙 (Manual)',
-      system: `Modo Automático ativo 🕒 (06h–18h Claro | 18h–24h Escuro • Agora: ${currentMode})`
-    };
-    addToast(modeLabels[nextPreference], 'info');
-  };
 
   const toggleTheme = () => {
     let nextPreference: 'light' | 'dark' | 'system';
@@ -2040,33 +2007,66 @@ export default function App() {
     } else {
       nextPreference = 'system';
     }
-    handleSelectThemePreference(nextPreference);
+    
+    setThemePreference(nextPreference);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('oss_theme_preference', nextPreference);
+    }
+
+    const modeLabels = {
+      light: 'Modo Claro ativo ☀️',
+      dark: 'Modo Escuro ativo 🌙',
+      system: 'Modo Automático ativo 💻 (Claro: 06h-18h | Escuro: 18h-06h)'
+    };
+    addToast(modeLabels[nextPreference], 'info');
   };
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     const updateThemeBasedOnTimeAndSystem = () => {
-      let shouldBeDark = false;
       if (themePreference === 'dark') {
-        shouldBeDark = true;
+        setIsDark(true);
       } else if (themePreference === 'light') {
-        shouldBeDark = false;
+        setIsDark(false);
       } else {
-        // Modo Automático (Sistema): Claro das 06h às 18h, Escuro das 18h às 24h/06h
+        // Modo Automático (Sistema): Claro das 06h às 18h, Escuro das 18h às 06h
         const hour = new Date().getHours();
-        shouldBeDark = hour >= 18 || hour < 6;
+        const isNight = hour >= 18 || hour < 6;
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        setIsDark(isNight || systemPrefersDark);
       }
-      setIsDark(shouldBeDark);
     };
 
     updateThemeBasedOnTimeAndSystem();
 
-    // Verify time changes periodically (every 30 seconds) to switch seamlessly at 06:00 and 18:00
+    // Verify time changes periodically (every 30 seconds)
     const intervalId = setInterval(updateThemeBasedOnTimeAndSystem, 30000);
+
+    // Watch OS prefers-color-scheme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      if (themePreference === 'system') {
+        const hour = new Date().getHours();
+        const isNight = hour >= 18 || hour < 6;
+        console.log(`[Theme] Preferência do OS / Horário alterada: ${e.matches || isNight ? 'Dark' : 'Light'}`);
+        setIsDark(isNight || e.matches);
+      }
+    };
+    
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleChange);
+    } else {
+      mediaQuery.addListener(handleChange);
+    }
 
     return () => {
       clearInterval(intervalId);
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleChange);
+      } else {
+        mediaQuery.removeListener(handleChange);
+      }
     };
   }, [themePreference]);
 
@@ -4748,7 +4748,85 @@ export default function App() {
         }
       }
 
-      const matchesCategory = matchesCategoryFilter(product, selectedCategory);
+      const productCategoryLower = product.category.toLowerCase();
+      const productMainCat = product.mainCategory;
+      const matchesCategory = selectedCategory === 'All' ||
+                              product.category === selectedCategory ||
+                              (productMainCat && productMainCat === selectedCategory) ||
+                              (selectedCategory === 'Vestuário' && (productMainCat === 'Vestuário' || productCategoryLower.includes('vestu') || productCategoryLower.includes('kimono') || productCategoryLower.includes('rash') || productCategoryLower.includes('bermuda') || productCategoryLower.includes('faixa') || productCategoryLower.includes('shorts'))) ||
+                              (selectedCategory === 'Equipamentos' && (productMainCat === 'Equipamentos' || productCategoryLower.includes('equip') || productCategoryLower.includes('tatame') || productCategoryLower.includes('prote') || productCategoryLower.includes('mochila') || productCategoryLower.includes('mat'))) ||
+                              (selectedCategory === 'Suplementos' && (productMainCat === 'Suplementos' || productCategoryLower.includes('suple') || productCategoryLower.includes('supple') || productCategoryLower === 'recovery' || productCategoryLower === 'suplementos' || productCategoryLower.includes('nutri'))) ||
+                              (selectedCategory === 'Acessórios' && (productMainCat === 'Acessórios' || productCategoryLower.includes('acessor') || productCategoryLower.includes('acessór') || productCategoryLower.includes('mochila') || productCategoryLower.includes('tape') || productCategoryLower === 'acessórios')) ||
+                              (selectedCategory === 'Equipamentos para Iniciantes' && (
+                                product.category === 'Equipamentos para Iniciantes' ||
+                                product.practitionerLevel === 'Iniciante' ||
+                                (product.category === 'Faixas' && (product.beltColor === 'Branca' || product.title.toLowerCase().includes('branca'))) ||
+                                product.title.toLowerCase().includes('iniciante') ||
+                                product.title.toLowerCase().includes('primeiro') ||
+                                product.title.toLowerCase().includes('entry') ||
+                                (product.subCategory && product.subCategory.toLowerCase().includes('iniciante'))
+                              )) ||
+                              (selectedCategory === 'Roupas de Competição' && (
+                                product.category === 'Roupas de Competição' ||
+                                product.practitionerLevel === 'Avançado' ||
+                                (product.category === 'Kimonos' && (product.title.toLowerCase().includes('mundial') || product.title.toLowerCase().includes('challenger') || product.title.toLowerCase().includes('onyx') || product.title.toLowerCase().includes('ryu') || product.title.toLowerCase().includes('h1x') || (product.price && product.price > 400))) ||
+                                (product.category === 'Rashguards' && (product.title.toLowerCase().includes('ibjjf') || product.title.toLowerCase().includes('neo-tiger') || product.title.toLowerCase().includes('oficial') || product.title.toLowerCase().includes('series'))) ||
+                                (product.category === 'Bermudas' && (product.title.toLowerCase().includes('tora-ko') || product.title.toLowerCase().includes('boardshorts') || product.title.toLowerCase().includes('combat'))) ||
+                                (product.category === 'Faixas' && (product.beltColor === 'Azul' || product.beltColor === 'Roxa' || product.beltColor === 'Marrom' || product.beltColor === 'Preta'))
+                              )) ||
+                              (selectedCategory === 'Acessórios de Treino' && (
+                                product.category === 'Acessórios de Treino' ||
+                                product.category === 'Acessórios' ||
+                                product.category === 'Equipamentos de Proteção' ||
+                                product.category === 'Protetores' ||
+                                product.category === 'Tatames' ||
+                                product.productType === 'Acessório' ||
+                                product.productType === 'Equipamento' ||
+                                productCategoryLower.includes('protet') ||
+                                productCategoryLower.includes('orelheira') ||
+                                productCategoryLower.includes('joelheira') ||
+                                productCategoryLower.includes('tatame') ||
+                                productCategoryLower.includes('acessor')
+                              )) ||
+                              (selectedCategory === 'Nutrição Esportiva' && (
+                                product.category === 'Nutrição Esportiva' ||
+                                product.category === 'Suplementos' ||
+                                product.category === 'Nutrição' ||
+                                product.productType === 'Suplemento' ||
+                                productCategoryLower.includes('suple') ||
+                                productCategoryLower.includes('nutri') ||
+                                product.title.toLowerCase().includes('creatina') ||
+                                product.title.toLowerCase().includes('whey')
+                              )) ||
+                              (selectedCategory === 'Livros/DVDs de Técnicas' && (
+                                product.category === 'Livros/DVDs de Técnicas' ||
+                                product.category === 'Cursos Online' ||
+                                product.category === 'E-books' ||
+                                product.category === 'Serviços' ||
+                                product.category === 'Conteúdo Digital' ||
+                                product.productType === 'Serviço' ||
+                                productCategoryLower.includes('curso') ||
+                                productCategoryLower.includes('livro') ||
+                                productCategoryLower.includes('book') ||
+                                productCategoryLower.includes('dvd') ||
+                                product.title.toLowerCase().includes('livro') ||
+                                product.title.toLowerCase().includes('curso') ||
+                                product.title.toLowerCase().includes('instrucional') ||
+                                product.title.toLowerCase().includes('e-book') ||
+                                product.title.toLowerCase().includes('workshop')
+                              )) ||
+                              (selectedCategory === 'Kimonos' && (productCategoryLower.includes('kimono') || productCategoryLower === 'gi' || productCategoryLower === 'kimonos')) ||
+                              (selectedCategory === 'Rashguards' && (productCategoryLower.includes('rash') || productCategoryLower.includes('licra') || productCategoryLower === 'rashguards' || productCategoryLower === 'rash guards')) ||
+                              (selectedCategory === 'Bermudas' && (productCategoryLower.includes('bermuda') || productCategoryLower.includes('shorts') || productCategoryLower === 'bermudas' || productCategoryLower === 'shorts')) ||
+                              (selectedCategory === 'Faixas' && (productCategoryLower.includes('faixa') || productCategoryLower.includes('belt') || productCategoryLower === 'faixas')) ||
+                              (selectedCategory === 'Tatames' && (productCategoryLower.includes('tatame') || productCategoryLower.includes('mat') || productCategoryLower === 'tatames')) ||
+                              (selectedCategory === 'Protetores' && (productCategoryLower.includes('protet') || productCategoryLower.includes('mouth') || productCategoryLower === 'protetores')) ||
+                              (selectedCategory === 'Equipamentos de Proteção' && (productCategoryLower.includes('prote') || productCategoryLower.includes('orelheira') || productCategoryLower.includes('joelheira') || productCategoryLower === 'equipamentos de proteção')) ||
+                              (selectedCategory === 'Cursos Online' && (productCategoryLower.includes('curso') || productCategoryLower.includes('online') || productCategoryLower.includes('instrucional'))) ||
+                              (selectedCategory === 'E-books' && (productCategoryLower.includes('book') || productCategoryLower.includes('livro') || productCategoryLower.includes('ebook'))) ||
+                              (selectedCategory === 'Conteúdo Digital' && (productCategoryLower.includes('digital') || productCategoryLower.includes('curso') || productCategoryLower.includes('book') || productCategoryLower.includes('ebook') || productCategoryLower.includes('serviço'))) ||
+                              (selectedCategory === 'Serviços' && (productCategoryLower.includes('servi') || productCategoryLower.includes('work') || productCategoryLower.includes('aula') || productCategoryLower === 'serviços')) ||
+                              (selectedCategory === 'Nutrição' && (productCategoryLower.includes('nutri') || productCategoryLower.includes('suple') || productCategoryLower === 'nutrição'));
 
             const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
       const matchesBrand = selectedBrands.length === 0 || (product.brand && selectedBrands.includes(product.brand));
@@ -4799,26 +4877,21 @@ export default function App() {
         return 'Outros';
       };
 
+      const getProductLevel = (p: typeof product) => {
+        if (p.practitionerLevel) return p.practitionerLevel;
+        const text = `${p.title} ${p.description} ${p.subCategory || ''}`.toLowerCase();
+        if (text.includes('iniciante') || text.includes('starter') || text.includes('start') || text.includes('básico')) return 'Iniciante';
+        if (text.includes('avançado') || text.includes('elite') || text.includes('pro') || text.includes('competição') || text.includes('competition')) return 'Avançado';
+        return 'Intermediário';
+      };
+
       const pType = getProductType(product);
       const matchesProductType = selectedProductTypes.length === 0 || selectedProductTypes.includes(pType);
 
-      const pLevel = getProductPractitionerLevel(product);
+      const pLevel = getProductLevel(product);
       const matchesPractitionerLevel = selectedPractitionerLevels.length === 0 || selectedPractitionerLevels.includes(pLevel) || pLevel === 'Todos';
 
-      let matchesUserTechnicalLevel = true;
-      if (filterByTechnicalLevel) {
-        if (pLevel !== 'Todos') {
-          if (userBelt === 'Branca') {
-            matchesUserTechnicalLevel = pLevel === 'Iniciante';
-          } else if (userBelt === 'Azul' || userBelt === 'Roxa') {
-            matchesUserTechnicalLevel = pLevel === 'Intermediário';
-          } else if (userBelt === 'Marrom' || userBelt === 'Preta') {
-            matchesUserTechnicalLevel = pLevel === 'Avançado';
-          }
-        }
-      }
-
-      return matchesSearch && matchesCategory && matchesPrice && matchesBrand && matchesSize && matchesColor && matchesGender && matchesBelt && matchesSubCategory && matchesRating && matchesPopularity && matchesPlatform && matchesProductType && matchesPractitionerLevel && matchesUserTechnicalLevel;
+      return matchesSearch && matchesCategory && matchesPrice && matchesBrand && matchesSize && matchesColor && matchesGender && matchesBelt && matchesSubCategory && matchesRating && matchesPopularity && matchesPlatform && matchesProductType && matchesPractitionerLevel;
     });
 
     // AI Refinement Ranking Logic
@@ -5236,15 +5309,62 @@ export default function App() {
       </div>
 
       {/* Advanced Technical Level / Recommended Belt Filter */}
-      <TechnicalLevelFilter
-        userBelt={userBelt}
-        onUpdateUserBelt={updateUserBelt}
-        filterByTechnicalLevel={filterByTechnicalLevel}
-        onToggleFilterByTechnicalLevel={setFilterByTechnicalLevel}
-        productList={productList}
-        compact={true}
-        className="border-l-2 border-green-600"
-      />
+      <div className="space-y-3 bg-zinc-50 dark:bg-zinc-900/40 p-4 border-l-2 border-green-600 relative overflow-hidden">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Award size={13} className="text-green-600" />
+            <h4 className="text-[10px] font-black uppercase tracking-[0.1em] text-black dark:text-white">Filtrar por Meu Nível</h4>
+          </div>
+          <Switch 
+            checked={filterByTechnicalLevel}
+            onCheckedChange={setFilterByTechnicalLevel}
+            className="data-[state=checked]:bg-green-600"
+          />
+        </div>
+        
+        <p className="text-[9px] font-sans font-medium text-zinc-500 leading-relaxed">
+          Exibe somente itens adequados para sua graduação ou abertos a todos os níveis técnicos.
+        </p>
+
+        <div className="space-y-2 pt-1 border-t border-zinc-150 dark:border-zinc-800">
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] font-mono font-bold uppercase text-zinc-450 dark:text-zinc-500">Sua Faixa Ativa:</span>
+            <span className={`text-[9px] font-mono font-black uppercase px-2 py-0.5 rounded-none border ${
+              userBelt === 'Branca' ? 'bg-white text-black border-zinc-300 dark:border-zinc-700' :
+              userBelt === 'Azul' ? 'bg-blue-600 text-white border-blue-700' :
+              userBelt === 'Roxa' ? 'bg-purple-700 text-white border-purple-800' :
+              userBelt === 'Marrom' ? 'bg-amber-800 text-white border-amber-900' : 'bg-black text-white border-zinc-900'
+            }`}>
+              🥋 {userBelt}
+            </span>
+          </div>
+
+          <div className="flex justify-between gap-1 pt-1.5">
+            {['Branca', 'Azul', 'Roxa', 'Marrom', 'Preta'].map(belt => {
+              const bgClass = 
+                belt === 'Branca' ? 'bg-white border-zinc-300 dark:border-zinc-700' :
+                belt === 'Azul' ? 'bg-blue-600 border-blue-700' :
+                belt === 'Roxa' ? 'bg-purple-700 border-purple-800' :
+                belt === 'Marrom' ? 'bg-amber-800 border-amber-900' : 'bg-black border-zinc-900';
+              const isCurrent = userBelt === belt;
+              return (
+                <button 
+                  key={`filter-level-${belt}`}
+                  title={`Definir nível como ${belt}`}
+                  onClick={() => updateUserBelt(belt)}
+                  className={`relative flex-1 h-5 border transition-all flex items-center justify-center ${
+                    isCurrent 
+                      ? 'border-green-600 scale-105 shadow-md ring-1 ring-green-600/30' 
+                      : 'border-transparent opacity-60 hover:opacity-100'
+                  }`}
+                >
+                  <div className={`w-full h-full rounded-none border ${bgClass}`} />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
 
       {/* BJJ Belt Color Filter - Visual Theme Accent */}
       <div className="space-y-2">
@@ -7163,7 +7283,6 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
           const rawNavItems = [
             { label: t('nav.home'), value: 'LANDING', icon: Home, keywords: 'início home tatame landing' },
             { label: t('nav.shop'), value: 'SHOP', icon: ShoppingCart, keywords: 'loja produtos kimonos faixas compras vitrine' },
-            { label: 'Alertas de Ofertas', value: 'NOTIFICATIONS', icon: BellRing, isNew: true, keywords: 'alertas ofertas notificações preço desconto email categorias' },
             { label: t('landing.compare_prices', { defaultValue: 'Comparar Preços' }), value: 'COMPARATOR', icon: Scale, isNew: true, keywords: 'preços comparar multiloja cotação economia' },
             { label: t('nav.blog', { defaultValue: 'Notícias' }), value: 'BLOG', icon: Newspaper, isNew: true, keywords: 'blog notícias artigos posts novidades técnicas' },
             { label: t('nav.podcast', { defaultValue: 'Podcast' }), value: 'PODCAST', icon: Mic, isNew: true, keywords: 'podcast episódios áudio bate-papo entrevistas' },
@@ -7415,20 +7534,6 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
           );
         })()}
 
-        {/* Language Selector in Desktop Sidebar */}
-        <div className={`p-4 border-t border-zinc-100 dark:border-zinc-900 transition-all duration-300 ${isSidebarCollapsed ? 'px-2 flex justify-center' : 'px-6'}`}>
-          {isSidebarCollapsed ? (
-            <LanguageSelector variant="compact" />
-          ) : (
-            <div className="space-y-1.5 w-full">
-              <span className="text-[8px] font-mono font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest block">
-                // {t('common.select_language', { defaultValue: 'IDIOMA' })}
-              </span>
-              <LanguageSelector variant="sidebar" />
-            </div>
-          )}
-        </div>
-
         {/* Tour/Ajuda button at the bottom of sidebar */}
         <div className={`p-4 border-t border-zinc-100 dark:border-zinc-900 transition-all duration-300 ${isSidebarCollapsed ? 'px-2 flex justify-center' : 'px-6'}`}>
           {isSidebarCollapsed ? (
@@ -7575,15 +7680,15 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
               {/* Navigation Links */}
               <div className="flex-1 p-3 space-y-1 overflow-y-auto">
                 {[
-                  { id: 'LANDING', label: t('nav.home', { defaultValue: 'Início' }), icon: <Home size={15} /> },
-                  { id: 'SHOP', label: t('nav.shop', { defaultValue: 'Catálogo & Loja' }), icon: <ShoppingBag size={15} /> },
-                  { id: 'COMPARATOR', label: t('nav.comparator', { defaultValue: 'Comparador de Preços' }), icon: <Scale size={15} /> },
-                  { id: 'WISHLIST', label: `${t('nav.wishlist', { defaultValue: 'Favoritos' })} (${wishlist.size})`, icon: <Heart size={15} className={wishlist.size > 0 ? "fill-red-500 text-red-500" : ""} /> },
-                  { id: 'BLOG', label: t('nav.blog', { defaultValue: 'Notícias' }), icon: <Newspaper size={15} /> },
-                  { id: 'SETTINGS', label: t('nav.settings', { defaultValue: 'Portal do Atleta' }), icon: <Award size={15} /> },
-                  { id: 'ABOUT', label: t('nav.about', { defaultValue: 'Sobre a OSS' }), icon: <Info size={15} /> },
-                  { id: 'TRANSPARENCY', label: t('nav.transparency', { defaultValue: 'Transparência 10%' }), icon: <ShieldCheck size={15} /> },
-                  { id: 'CONTACT', label: t('nav.contact', { defaultValue: 'Contato' }), icon: <Mail size={15} /> }
+                  { id: 'LANDING', label: 'Tatame (Início)', icon: <Home size={15} /> },
+                  { id: 'SHOP', label: 'Catálogo & Loja', icon: <ShoppingBag size={15} /> },
+                  { id: 'COMPARATOR', label: 'Comparador de Preços', icon: <Scale size={15} /> },
+                  { id: 'WISHLIST', label: `Favoritos (${wishlist.size})`, icon: <Heart size={15} className={wishlist.size > 0 ? "fill-red-500 text-red-500" : ""} /> },
+                  { id: 'BLOG', label: 'Notícias & Matérias', icon: <Newspaper size={15} /> },
+                  { id: 'SETTINGS', label: 'Painel do Atleta & HQ', icon: <Award size={15} /> },
+                  { id: 'ABOUT', label: 'Sobre a OSS', icon: <Info size={15} /> },
+                  { id: 'TRANSPARENCY', label: 'Transparência & Afiliados', icon: <ShieldCheck size={15} /> },
+                  { id: 'CONTACT', label: 'Suporte & Contato', icon: <Mail size={15} /> }
                 ].map((item) => {
                   const isActive = view === item.id;
                   return (
@@ -7606,61 +7711,18 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
                 })}
               </div>
 
-              {/* Mobile Drawer Footer with Language and Theme */}
-              <div className="p-3 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 space-y-2.5">
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500">
-                    <span className="font-bold uppercase tracking-wider">{t('common.theme_visual', { defaultValue: 'Tema Visual' })}</span>
-                    <span className="text-[8.5px] font-mono text-zinc-400">
-                      {themePreference === 'system' ? '06h-18h Claro / 18h-24h Escuro' : 'Manual Fixo'}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-1">
-                    <button
-                      type="button"
-                      onClick={() => handleSelectThemePreference('system')}
-                      className={`py-1.5 px-1 border text-[8.5px] font-mono font-bold uppercase transition-all flex flex-col items-center justify-center cursor-pointer ${
-                        themePreference === 'system'
-                          ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white shadow-xs'
-                          : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 hover:border-zinc-400'
-                      }`}
-                      title="Automático pelo horário (06h às 18h Claro / 18h às 24h Escuro)"
-                    >
-                      <span>Auto</span>
-                      <span className="text-[7px] text-green-500 font-black">6h-18h</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleSelectThemePreference('light')}
-                      className={`py-1.5 px-1 border text-[8.5px] font-mono font-bold uppercase transition-all flex items-center justify-center gap-1 cursor-pointer ${
-                        themePreference === 'light'
-                          ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white shadow-xs'
-                          : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 hover:border-zinc-400'
-                      }`}
-                    >
-                      <Sun size={10} className="text-amber-500" />
-                      <span>Claro</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleSelectThemePreference('dark')}
-                      className={`py-1.5 px-1 border text-[8.5px] font-mono font-bold uppercase transition-all flex items-center justify-center gap-1 cursor-pointer ${
-                        themePreference === 'dark'
-                          ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white shadow-xs'
-                          : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 hover:border-zinc-400'
-                      }`}
-                    >
-                      <Moon size={10} className="text-indigo-400" />
-                      <span>Escuro</span>
-                    </button>
-                  </div>
+              {/* Mobile Drawer Footer */}
+              <div className="p-3 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 space-y-2">
+                <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500">
+                  <span>Tema Visual</span>
+                  <button
+                    onClick={toggleTheme}
+                    className="flex items-center gap-1.5 px-2.5 py-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 font-bold uppercase text-[9px]"
+                  >
+                    {isDark ? <Moon size={11} /> : <Sun size={11} />}
+                    <span>{isDark ? 'Escuro' : 'Claro'}</span>
+                  </button>
                 </div>
-
-                {/* Mobile Language Selector Grid */}
-                <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800">
-                  <LanguageSelector variant="drawer" />
-                </div>
-
                 <p className="text-[7.5px] font-mono text-zinc-400 text-center uppercase tracking-widest pt-1">
                   © 2026 OSS.OS SYSTEM // TATAME HQ
                 </p>
@@ -7671,7 +7733,7 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
       </AnimatePresence>
 
       {/* TopAppBar */}
-      <header className={`fixed top-0 z-[60] w-full ${isSidebarCollapsed ? 'lg:left-20 lg:w-[calc(100%-5rem)]' : 'lg:left-64 lg:w-[calc(100%-16rem)]'} border-b border-zinc-200/40 dark:border-zinc-800/60 bg-white/85 dark:bg-black/85 backdrop-blur-2xl px-2 sm:px-4 md:px-6 lg:px-8 h-16 flex items-center justify-between transition-all duration-300 ease-in-out`}>
+      <header className={`fixed top-0 z-[60] w-full ${isSidebarCollapsed ? 'lg:left-20 lg:w-[calc(100%-5rem)]' : 'lg:left-64 lg:w-[calc(100%-16rem)]'} border-b border-zinc-200/5 dark:border-zinc-800/10 bg-white/70 dark:bg-black/70 backdrop-blur-2xl px-4 sm:px-6 md:px-8 h-16 flex items-center justify-between transition-all duration-300 ease-in-out`}>
         <div className="absolute bottom-0 left-0 h-[1px] bg-green-600/30 w-full overflow-hidden">
           <motion.div 
             className="h-full bg-green-500 shadow-[0_0_10px_#22c55e]" 
@@ -7681,17 +7743,16 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
             }} 
           />
         </div>
-        <div className="w-full h-full flex items-center justify-between gap-1 sm:gap-2 md:gap-4 max-w-full min-w-0">
-          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0 h-full">
+        <div className="w-full h-full flex items-center justify-between gap-2 md:gap-4">
+          <div className="flex items-center gap-3 md:gap-4 shrink-0 h-full">
             <motion.button 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-9 h-9 sm:w-10 sm:h-10 text-black dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all active:opacity-80 flex items-center justify-center lg:hidden relative shrink-0 cursor-pointer" 
+              className="w-10 h-10 text-black dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all active:opacity-80 flex items-center justify-center lg:hidden relative shrink-0 cursor-pointer" 
               onClick={() => setIsMobileMenuOpen(true)}
               title="Abrir Menu"
-              aria-label="Abrir Menu Lateral"
             >
-              <Menu size={19} />
+              <Menu size={20} />
               {cartCount > 0 && (
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-green-600 rounded-full border border-white dark:border-black shadow-[0_0_5px_#22c55e]"></span>
               )}
@@ -7705,9 +7766,8 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
                   onClick={() => handleNavigate('LANDING')}
                   className="flex items-center gap-2 group outline-none cursor-pointer"
                 >
-                  <div className="flex items-center gap-2">
-                    <OssLogo size="sm" className="sm:hidden group-hover:opacity-80 transition-opacity" />
-                    <OssLogo size="md" className="hidden sm:flex group-hover:opacity-80 transition-opacity" />
+                  <div className="flex items-center gap-3">
+                    <OssLogo size="md" className="group-hover:opacity-80 transition-opacity" />
                   </div>
                 </motion.button>
                 </TooltipTrigger>
@@ -7719,7 +7779,7 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
           </div>
 
           {/* Unified Global Header Search */}
-          <div className="flex-1 min-w-0 max-w-xs md:max-w-sm xl:max-w-md mx-0.5 sm:mx-3 flex items-center justify-end md:justify-start h-full">
+          <div className="flex-1 max-w-sm xl:max-w-md mx-1 sm:mx-3 flex items-center justify-center md:justify-start h-full">
             <GlobalHeaderSearch
               productList={productList}
               blogPosts={blogPosts}
@@ -7770,42 +7830,24 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
               <Scale size={12} />
               {t('nav.comparator_short', { defaultValue: 'Comparador' })}
             </motion.button>
-            <motion.button 
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => handleNavigate('EXTERNAL_SHOWCASE')}
-              className={`micro-label px-3 h-9 flex items-center gap-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all rounded-none cursor-pointer ${view === 'EXTERNAL_SHOWCASE' ? 'text-green-600 border-b-2 border-green-600 font-black' : 'text-zinc-600 dark:text-zinc-300'}`}
-              title="Visualização Externa / Vitrine para Clientes e Academias"
-            >
-              <Eye size={12} className="text-green-500" />
-              <span>Vitrine Externa</span>
-            </motion.button>
           </nav>
 
-          <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 shrink-0 h-full">
-             <motion.button 
-               whileHover={{ scale: 1.05 }}
-               whileTap={{ scale: 0.95 }}
-               onClick={() => handleNavigate('EXTERNAL_SHOWCASE')}
-               className={`hidden sm:flex h-8 sm:h-9 px-2 sm:px-2.5 items-center gap-1.5 text-[9px] font-mono font-bold uppercase transition-all rounded-none cursor-pointer shrink-0 border ${
-                 view === 'EXTERNAL_SHOWCASE'
-                   ? 'bg-green-600 text-black border-green-600 shadow-sm'
-                   : 'bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'
-               }`}
-               title="Alternar para Visualização Externa (Vitrine Pública)"
-               aria-label="Visualização Externa"
-             >
-               <Eye size={13} className={view === 'EXTERNAL_SHOWCASE' ? 'text-black' : 'text-green-500'} />
-               <span className="hidden sm:inline">Vitrine Externa</span>
-             </motion.button>
+          <div className="flex items-center gap-1.5 sm:gap-2 md:gap-2.5 shrink-0 h-full">
              <motion.button 
                whileHover={{ scale: 1.05 }}
                whileTap={{ scale: 0.95 }}
                onClick={() => {
-                 playClickSound();
-                 handleNavigate('NOTIFICATIONS');
+                 if (notificationPermission === 'denied') {
+                   setNotificationModalInitialTab('guide');
+                   setIsNotificationModalOpen(true);
+                 } else if (notificationPermission === 'granted') {
+                   setNotificationModalInitialTab('status');
+                   setIsNotificationModalOpen(true);
+                 } else {
+                   setIsNotificationOnboardingOpen(true);
+                 }
                }}
-               className={`w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center transition-colors rounded-none cursor-pointer relative shrink-0 ${
+               className={`w-9 h-9 flex items-center justify-center transition-colors rounded-none cursor-pointer relative ${
                  notificationPermission === 'granted'
                    ? 'text-green-600 hover:bg-green-50 dark:hover:bg-green-950/30'
                    : notificationPermission === 'denied'
@@ -7823,29 +7865,43 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
              >
                {notificationPermission === 'granted' ? (
                  <>
-                   <Bell size={16} className="text-green-600" />
-                   <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-green-500" />
+                   <Bell size={17} className="text-green-600" />
+                   <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-green-500" />
                  </>
                ) : notificationPermission === 'denied' ? (
-                 <BellOff size={16} className="text-red-500" />
+                 <BellOff size={17} className="text-red-500" />
                ) : (
-                 <Bell size={16} />
+                 <Bell size={17} />
                )}
              </motion.button>
 
-             {/* Theme Selector (Claro 6h-18h / Escuro 18h-24h e troca manual) */}
-             <ThemeSelector 
-               themePreference={themePreference} 
-               onSelectTheme={handleSelectThemePreference} 
-               isDark={isDark} 
-             />
+             <motion.button 
+               whileHover={{ scale: 1.1, rotate: 15 }}
+               whileTap={{ scale: 0.9 }}
+               onClick={toggleTheme}
+               className="hidden md:inline-flex w-9 h-9 items-center justify-center transition-all hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-none cursor-pointer text-zinc-500"
+               title={
+                 themePreference === 'light' 
+                   ? "Tema: Claro (Clique para Escuro)" 
+                   : themePreference === 'dark' 
+                   ? "Tema: Escuro (Clique para Automático)" 
+                   : "Tema: Automático (Clique para Claro)"
+               }
+             >
+               {themePreference === 'light' ? (
+                 <Sun size={18} className="text-yellow-500 hover:text-zinc-600 transition-colors" />
+               ) : themePreference === 'dark' ? (
+                 <Moon size={18} className="text-indigo-400 hover:text-zinc-400 transition-colors" />
+               ) : (
+                 <Laptop size={18} className="text-zinc-500 dark:text-zinc-400 hover:text-green-500 transition-colors" />
+               )}
+             </motion.button>
              
              <motion.button 
                whileHover={{ scale: 1.1 }}
                whileTap={{ scale: 0.9 }}
                onClick={() => handleNavigate('WISHLIST')}
-               className="hidden md:inline-flex relative w-9 h-9 items-center justify-center hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors rounded-none group cursor-pointer shrink-0"
-               title="Lista de Desejos"
+               className="hidden md:inline-flex relative w-9 h-9 items-center justify-center hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors rounded-none group cursor-pointer"
              >
                <motion.div
                  animate={pulseWishlist ? {
@@ -7855,7 +7911,7 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
                  className="flex items-center justify-center"
                >
                  <Heart 
-                   size={17} 
+                   size={18} 
                    className={`transition-all ${wishlist.size > 0 || view === 'WISHLIST' ? 'fill-black dark:fill-white text-black dark:text-white' : 'text-zinc-400 group-hover:text-black dark:group-hover:text-white'}`} 
                  />
                </motion.div>
@@ -7873,11 +7929,8 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
              <motion.button 
                whileHover={{ scale: 1.1 }}
                whileTap={{ scale: 0.9 }}
-               className="relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors rounded-none group cursor-pointer shrink-0"
-               id="header-cart-btn" 
-               title="Sacola de Compras" 
-               onClick={() => { playClickSound(); setIsCartDrawerOpen(true); }}
-               aria-label="Sacola de Compras"
+               className="relative w-9 h-9 flex items-center justify-center hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors rounded-none group cursor-pointer"
+               id="header-cart-btn" title="Sacola de Compras" onClick={() => { playClickSound(); setIsCartDrawerOpen(true); }}
              >
                <div className="relative flex items-center justify-center">
                  <motion.div
@@ -7896,8 +7949,8 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
                    className="flex items-center justify-center"
                  >
                    <ShoppingCart 
-                     size={18} 
-                     className={`transition-all ${cartCount > 0 ? 'text-green-600' : 'text-zinc-600 dark:text-zinc-300 group-hover:text-black dark:group-hover:text-white'}`} 
+                     size={19} 
+                     className={`transition-all ${cartCount > 0 ? 'text-green-600' : 'text-zinc-400 group-hover:text-black dark:group-hover:text-white'}`} 
                    />
                  </motion.div>
 
@@ -7928,7 +7981,7 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
                      stiffness: 450,
                      damping: 14
                    }}
-                   className="absolute top-0.5 right-0.5 bg-green-600 dark:bg-green-500 text-white text-[7.5px] min-w-[15px] h-[15px] px-1 flex items-center justify-center rounded-full font-black shadow-[0_2px_8px_rgba(34,197,94,0.45)] tabular-nums"
+                   className="absolute top-1 right-1 bg-green-600 dark:bg-green-500 text-white text-[7.5px] min-w-[15px] h-[15px] px-1 flex items-center justify-center rounded-full font-black shadow-[0_2px_8px_rgba(34,197,94,0.45)] tabular-nums"
                  >
                    {cartCount}
                  </motion.span>
@@ -7937,7 +7990,7 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
 
              {/* Online/Offline Status Indicator */}
              <div 
-               className={`hidden lg:flex items-center gap-1.5 px-2.5 h-7 text-[8px] font-mono font-black uppercase tracking-widest shrink-0 ${
+               className={`hidden md:flex items-center gap-1.5 px-2.5 h-7 text-[8px] font-mono font-black uppercase tracking-widest ${
                  isOnline 
                  ? "bg-green-500/10 text-green-600 border border-green-500/20" 
                  : "bg-red-500/10 text-red-500 border border-red-500/20 animate-pulse"
@@ -7945,7 +7998,7 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
                title={isOnline ? "Conexão Estabelecida - Portal Online" : "Sem Conexão - Modo Offline Ativo"}
              >
                <div className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-green-500" : "bg-red-500"}`} />
-               <span>{isOnline ? "ONLINE" : "OFFLINE"}</span>
+               <span className="hidden sm:inline">{isOnline ? "ONLINE" : "OFFLINE"}</span>
              </div>
 
              {/* Authenticated User Profile Quick Badge / Action */}
@@ -7953,19 +8006,18 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
                <button
                  id="header-user-profile-btn"
                  onClick={() => handleNavigate('SETTINGS')}
-                 className="flex items-center justify-center gap-1.5 px-2 sm:px-2.5 h-8 sm:h-9 bg-black text-white dark:bg-white dark:text-black border border-black dark:border-white shadow-[1px_1px_0px_#000000] dark:shadow-[1px_1px_0px_#ffffff] hover:opacity-90 transition-all cursor-pointer shrink-0"
+                 className="flex items-center gap-2 px-2.5 h-9 bg-black text-white dark:bg-white dark:text-black border border-black dark:border-white shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#ffffff] hover:opacity-90 transition-all cursor-pointer"
                  title="Meu Painel e Configurações"
-                 aria-label="Meu Painel do Atleta"
                >
                  {user.photoURL ? (
-                   <img src={user.photoURL} alt={user.displayName || 'Atleta'} className="w-4 h-4 sm:w-5 sm:h-5 rounded-none object-cover border border-white/40" />
+                   <img src={user.photoURL} alt={user.displayName || 'Atleta'} className="w-5 h-5 rounded-none object-cover border border-white/40" />
                  ) : (
                    <User size={13} />
                  )}
-                 <span className="text-[9px] font-mono font-black uppercase tracking-widest hidden sm:inline max-w-[90px] truncate">
+                 <span className="text-[9px] font-mono font-black uppercase tracking-widest hidden sm:inline max-w-[110px] truncate">
                    {user.displayName?.split(' ')[0] || 'Atleta'}
                  </span>
-                 <span className="text-[7.5px] font-mono bg-green-600 text-white px-1 py-0.2 uppercase font-bold hidden sm:inline">
+                 <span className="text-[7.5px] font-mono bg-green-600 text-white px-1 py-0.5 uppercase font-bold">
                    HQ
                  </span>
                </button>
@@ -7973,16 +8025,15 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
                <button
                  id="header-login-btn"
                  onClick={() => handleSignIn('atleta', false)}
-                 className="flex items-center justify-center gap-1.5 px-2 sm:px-3 h-8 sm:h-9 bg-black text-white dark:bg-white dark:text-black border border-black dark:border-white shadow-[1px_1px_0px_#000000] dark:shadow-[1px_1px_0px_#ffffff] text-[9px] font-mono font-black uppercase tracking-widest hover:opacity-90 transition-all cursor-pointer shrink-0"
+                 className="flex items-center gap-1.5 px-3 h-9 bg-black text-white dark:bg-white dark:text-black border border-black dark:border-white shadow-[2px_2px_0px_#000000] dark:shadow-[2px_2px_0px_#ffffff] text-[9px] font-mono font-black uppercase tracking-widest hover:opacity-90 transition-all cursor-pointer"
                  title="Acessar conta ou se cadastrar"
-                 aria-label="Acessar conta ou se cadastrar"
                >
-                 <User size={13} />
-                 <span className="hidden sm:inline">{t('common.login', { defaultValue: 'ENTRAR' })}</span>
+                 <User size={12} />
+                 <span>ENTRAR</span>
                </button>
              )}
 
-             <div className="hidden sm:flex items-center h-full shrink-0">
+             <div className="hidden md:flex items-center h-full">
                <LanguageSelector />
              </div>
           </div>
@@ -7991,20 +8042,20 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
 
       {/* Quick Access Bar */}
       {view === 'SHOP' && (
-        <div className={`fixed top-16 z-40 w-full ${isSidebarCollapsed ? 'lg:left-20 lg:w-[calc(100%-5rem)]' : 'lg:left-64 lg:w-[calc(100%-16rem)]'} bg-zinc-50/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200/50 dark:border-zinc-800/50 h-12 flex items-center overflow-x-auto no-scrollbar px-2.5 sm:px-6 shadow-sm transition-all duration-300 ease-in-out`}>
+        <div className={`fixed top-16 z-40 w-full ${isSidebarCollapsed ? 'lg:left-20 lg:w-[calc(100%-5rem)]' : 'lg:left-64 lg:w-[calc(100%-16rem)]'} bg-zinc-50/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200/50 dark:border-zinc-800/50 h-12 flex items-center overflow-x-auto no-scrollbar px-6 shadow-sm transition-all duration-300 ease-in-out`}>
           <div className="container mx-auto flex items-center gap-1 md:gap-4 min-w-max">
             <span className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-400 mr-2 border-r border-zinc-200 dark:border-zinc-800 pr-4 h-4 flex items-center">{t('quick_access')}</span>
             {[
-              { name: t('categories.All', { defaultValue: 'Todos' }), value: 'All', emoji: '🥋' },
-              { name: t('categories.beginners', { defaultValue: 'Iniciantes' }), value: 'Equipamentos para Iniciantes', emoji: '🔰' },
-              { name: t('categories.competition', { defaultValue: 'Competição' }), value: 'Roupas de Competição', emoji: '🏆' },
-              { name: t('categories.training_accessories', { defaultValue: 'Acessórios' }), value: 'Acessórios de Treino', emoji: '🛡️' },
-              { name: t('categories.nutrition', { defaultValue: 'Nutrição' }), value: 'Nutrição Esportiva', emoji: '⚡' },
-              { name: t('categories.instructionals', { defaultValue: 'Livros & Técnicas' }), value: 'Livros/DVDs de Técnicas', emoji: '📚' },
-              { name: t('categories.Kimonos', { defaultValue: 'Kimonos' }), value: 'Kimonos', emoji: '🥋' },
-              { name: t('categories.Rashguards', { defaultValue: 'Rashguards' }), value: 'Rashguards', emoji: '👕' },
-              { name: t('categories.Faixas', { defaultValue: 'Faixas' }), value: 'Faixas', emoji: '🎗️' },
-              { name: t('categories.Shorts', { defaultValue: 'Bermudas' }), value: 'Bermudas', emoji: '🩳' }
+              { name: 'Todos', value: 'All', emoji: '🥋' },
+              { name: 'Iniciantes', value: 'Equipamentos para Iniciantes', emoji: '🔰' },
+              { name: 'Competição', value: 'Roupas de Competição', emoji: '🏆' },
+              { name: 'Acessórios de Treino', value: 'Acessórios de Treino', emoji: '🛡️' },
+              { name: 'Nutrição Esportiva', value: 'Nutrição Esportiva', emoji: '⚡' },
+              { name: 'Livros & Técnicas', value: 'Livros/DVDs de Técnicas', emoji: '📚' },
+              { name: 'Kimonos', value: 'Kimonos', emoji: '🥋' },
+              { name: 'Rashguards', value: 'Rashguards', emoji: '👕' },
+              { name: 'Faixas', value: 'Faixas', emoji: '🎗️' },
+              { name: 'Bermudas', value: 'Bermudas', emoji: '🩳' }
             ].map((cat) => (
               <motion.button
                 key={cat.value}
@@ -8052,12 +8103,12 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
                 <span className="text-[11px] font-black uppercase tracking-wider text-black dark:text-white">
                   {notificationPermission === 'denied'
                     ? 'Alertas de Preço Bloqueados'
-                    : t('notification.price_alert_title', { defaultValue: 'Alertas de Queda de Preço' })}
+                    : 'Alertas de Queda de Preço'}
                 </span>
                 <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-sans">
                   {notificationPermission === 'denied'
                     ? 'Desbloqueie no navegador para receber avisos de descontos nos seus produtos salvos.'
-                    : t('notification.price_alert_desc', { defaultValue: 'Receba avisos instantâneos quando seus produtos favoritados entrarem em promoção.' })}
+                    : 'Receba avisos instantâneos quando seus produtos favoritados entrarem em promoção.'}
                 </span>
               </div>
             </div>
@@ -8079,7 +8130,7 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
                   onClick={() => handleRequestNotificationPermission()}
                   className="bg-green-600 hover:bg-green-500 text-white px-3.5 py-1.5 text-[10px] font-mono font-black uppercase tracking-wider transition-colors cursor-pointer"
                 >
-                  {t('notification.enable_btn', { defaultValue: 'Ativar Alertas' })}
+                  Ativar Alertas
                 </button>
               )}
               <button 
@@ -8114,54 +8165,6 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
                   <div className="absolute inset-0 rounded-full border-4 border-[#cc0000] border-t-transparent animate-spin" />
                 </div>
                 <p className="text-xs font-mono font-black uppercase tracking-widest text-zinc-400">Verificando Credenciais do Tatame...</p>
-              </div>
-            ) : view === 'EXTERNAL_SHOWCASE' ? (
-              <ExternalShowcaseView
-                productList={productList}
-                onSelectProduct={(p) => {
-                  setSelectedGalleryProduct(p);
-                  setIsGalleryOpen(true);
-                }}
-                onAddToCart={(p) => handleAddToCart(p)}
-                onCheckout={(p) => { openCheckoutModal(p); }}
-                wishlist={wishlist}
-                onToggleWishlist={toggleWishlist}
-                onOpenSizeChart={() => setIsExchangeModalOpen(true)}
-                onOpenExchangeModal={() => setIsExchangeModalOpen(true)}
-                onNavigate={handleNavigate}
-                onSignIn={() => handleSignIn('atleta', false)}
-                user={user}
-                addToast={(msg, type) => addToast(msg, type === 'error' ? 'error' : 'success')}
-                playClickSound={playClickSound}
-              />
-            ) : view === 'NOTIFICATIONS' ? (
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 min-h-[85vh]">
-                <OfferNotificationsCenter
-                  monitoredProducts={productList.filter(p => wishlist.has(p.id))}
-                  wishlistAlerts={wishlist}
-                  onTogglePriceAlert={toggleWishlist}
-                  onSelectProduct={(p) => {
-                    setSelectedGalleryProduct(p);
-                    setIsGalleryOpen(true);
-                  }}
-                  onNavigate={(dest) => {
-                    if (dest.includes('product=')) {
-                      const pId = dest.split('product=')[1];
-                      const found = productList.find(x => x.id === pId);
-                      if (found) {
-                        setSelectedGalleryProduct(found);
-                        setIsGalleryOpen(true);
-                      }
-                    } else {
-                      handleNavigate(dest as View);
-                    }
-                  }}
-                  user={user}
-                  viewedProductIds={viewedProductIds}
-                  productList={productList}
-                  addToast={addToast}
-                  playClickSound={playClickSound}
-                />
               </div>
             ) : view === 'COMPARATOR' ? (
               <PriceComparator onBack={() => handleNavigate('LANDING')} />
@@ -8202,12 +8205,6 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
                   onAddReview={handleAddProductReview}
                   addToast={addToast}
                   playClickSound={playClickSound}
-                  userBelt={userBelt}
-                  onUpdateUserBelt={updateUserBelt}
-                  filterByTechnicalLevel={filterByTechnicalLevel}
-                  onToggleFilterByTechnicalLevel={setFilterByTechnicalLevel}
-                  themePreference={themePreference}
-                  onSelectTheme={handleSelectThemePreference}
                 />
               </Suspense>
             ) : (view === 'SETTINGS' || view === 'DASHBOARD') && !isAdminAuthenticated ? (
@@ -10384,17 +10381,6 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
         )}
           </motion.div>
         </AnimatePresence>
-
-        {/* Rodapé Corporativo e Profissional */}
-        <ProfessionalFooter
-          onNavigate={handleNavigate}
-          onOpenExchangeModal={() => setIsExchangeModalOpen(true)}
-          onOpenSizeChart={() => setIsExchangeModalOpen(true)}
-          onOpenLgpdModal={() => setIsLgpdModalOpen(true)}
-          onOpenExternalShowcase={() => handleNavigate('EXTERNAL_SHOWCASE')}
-          playClickSound={playClickSound}
-          addToast={(msg, type) => addToast(msg, type === 'error' ? 'error' : 'success')}
-        />
       </main>
 
     {/* Filter Drawer */}

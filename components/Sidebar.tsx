@@ -20,12 +20,10 @@ import {
   Dumbbell,
   Users,
   Zap,
-  Smartphone,
-  Eye
+  Smartphone
 } from 'lucide-react';
 import { OssLogo } from './Logo';
 import { Button } from '@/components/ui/button';
-import { LanguageSelector } from './LanguageSelector';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -63,7 +61,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const menuItems = [
     { label: t('nav.home'), value: 'LANDING', icon: Home },
     { label: t('nav.shop'), value: 'SHOP', icon: ShoppingCart },
-    { label: 'Vitrine Externa', value: 'EXTERNAL_SHOWCASE', icon: Eye, isNew: true },
     { label: t('landing.compare_prices', { defaultValue: 'Comparar Preços' }), value: 'COMPARATOR', icon: Award, isNew: true },
     { label: t('nav.blog', { defaultValue: 'Notícias' }), value: 'BLOG', icon: Newspaper, isNew: true },
     { label: t('nav.podcast', { defaultValue: 'Podcast' }), value: 'PODCAST', icon: Mic, isNew: true },
@@ -241,8 +238,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {/* Language Selector */}
               <div className="flex flex-col gap-1.5 flex-1">
                 <span className="text-[8px] font-mono font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">// IDIOMA</span>
-                <div className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black w-full flex items-center justify-center">
-                  <LanguageSelector variant="compact" className="w-full justify-between h-8" />
+                <div className="flex gap-0.5 border border-zinc-200 dark:border-zinc-800 p-0.5 bg-white dark:bg-black w-full">
+                  {[
+                    { code: 'pt', flag: '🇧🇷' },
+                    { code: 'en', flag: '🇺🇸' },
+                    { code: 'es', flag: '🇪🇸' }
+                  ].map((lang) => {
+                    const isSelected = i18n.language && i18n.language.startsWith(lang.code);
+                    return (
+                      <button
+                        key={lang.code}
+                        onClick={() => i18n.changeLanguage(lang.code)}
+                        className={`flex-1 text-center py-1 text-[11px] hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors cursor-pointer ${isSelected ? 'bg-zinc-200 dark:bg-zinc-800 font-bold border border-zinc-300 dark:border-zinc-700' : ''}`}
+                        title={lang.code.toUpperCase()}
+                      >
+                        {lang.flag}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>

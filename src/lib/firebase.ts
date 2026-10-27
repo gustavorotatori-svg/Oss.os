@@ -19,7 +19,7 @@ import {
 import { onAuthStateChanged } from 'firebase/auth';
 import { getMessaging, isSupported } from 'firebase/messaging';
 import firebaseConfig from '../../firebase-applet-config.json';
-import { Product, UserProfile, WishlistItem, Review, ProductOffer, OfferSubscription, InAppPriceAlertNotification } from '../types';
+import { Product, UserProfile, WishlistItem, Review, ProductOffer } from '../types';
 import { performanceTelemetry } from './performanceTelemetry';
 import { systemErrorLog } from './systemErrorLog';
 
@@ -524,86 +524,6 @@ export async function removePriceAlertFromFirestore(userId: string, productId: s
       throw error;
     }
   }, `Desativar alerta de preço para produto ${productId}`);
-}
-
-// --- OFFER NOTIFICATIONS SUBSCRIPTIONS FUNCTIONS ---
-
-export async function saveOfferSubscriptionToFirestore(
-  userId: string,
-  subscription: OfferSubscription
-): Promise<void> {
-  const path = `users/${userId}/offerSubscriptions/${subscription.id}`;
-  return performanceTelemetry.trackAsync('firestore', 'saveOfferSubscription', async () => {
-    try {
-      await setDoc(doc(db, `users/${userId}/offerSubscriptions`, subscription.id), {
-        ...subscription,
-        updatedAt: new Date().toISOString()
-      }, { merge: true });
-    } catch (error) {
-      handleFirestoreError(error, OperationType.WRITE, path);
-      throw error;
-    }
-  }, `Salvar assinatura de oferta (${subscription.targetName})`);
-}
-
-export async function removeOfferSubscriptionFromFirestore(
-  userId: string,
-  subscriptionId: string
-): Promise<void> {
-  const path = `users/${userId}/offerSubscriptions/${subscriptionId}`;
-  return performanceTelemetry.trackAsync('firestore', 'removeOfferSubscription', async () => {
-    try {
-      await deleteDoc(doc(db, `users/${userId}/offerSubscriptions`, subscriptionId));
-    } catch (error) {
-      handleFirestoreError(error, OperationType.DELETE, path);
-      throw error;
-    }
-  }, `Remover assinatura de oferta (${subscriptionId})`);
-}
-
-export async function getOfferSubscriptionsFromFirestore(
-  userId: string
-): Promise<OfferSubscription[]> {
-  const path = `users/${userId}/offerSubscriptions`;
-  return performanceTelemetry.trackAsync('firestore', 'getOfferSubscriptions', async () => {
-    try {
-      const snap = await getDocs(collection(db, path));
-      const subs: OfferSubscription[] = [];
-      snap.forEach(docSnap => {
-        subs.push({ id: docSnap.id, ...docSnap.data() } as OfferSubscription);
-      });
-      return subs;
-    } catch (error) {
-      handleFirestoreError(error, OperationType.GET, path);
-      return [];
-    }
-  }, `Buscar assinaturas de ofertas do usuário`);
-}
-
-export async function saveInAppNotificationToFirestore(
-  userId: string,
-  notification: InAppPriceAlertNotification
-): Promise<void> {
-  const path = `users/${userId}/notifications/${notification.id}`;
-  return performanceTelemetry.trackAsync('firestore', 'saveInAppNotification', async () => {
-    try {
-      await setDoc(doc(db, `users/${userId}/notifications`, notification.id), {
-        id: notification.id,
-        title: notification.productTitle,
-        body: `De R$ ${notification.originalPrice?.toFixed(2) || ''} por R$ ${notification.currentPrice.toFixed(2)} (-${notification.discountPct || 0}%)`,
-        type: notification.type,
-        isRead: notification.isRead,
-        createdAt: notification.createdAt,
-        link: `/?view=SHOP&product=${notification.productId}`,
-        channelsNotified: notification.channelsNotified || ['app'],
-        dealDetails: notification.dealDetails || null,
-        emailSent: Boolean(notification.emailSent)
-      }, { merge: true });
-    } catch (error) {
-      handleFirestoreError(error, OperationType.WRITE, path);
-      throw error;
-    }
-  }, `Salvar notificação in-app`);
 }
 
 // --- PRODUCT REVIEWS PERSISTENCE FUNCTIONS ---

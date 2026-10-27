@@ -27,13 +27,7 @@ const resources: any = {
         "Recovery": "Recovery",
         "Equipamentos": "Equipment",
         "Academias": "Academies",
-        "Filosofia": "Philosophy",
-        "beginners": "Beginners",
-        "competition": "Competition",
-        "training_accessories": "Training Gear",
-        "nutrition": "Sports Nutrition",
-        "instructionals": "Books & Techniques",
-        "mat_armor": "Mat Armor"
+        "Filosofia": "Philosophy"
       },
       "nav": {
         "home": "Home",
@@ -59,59 +53,7 @@ const resources: any = {
         "back": "Back",
         "next": "Next",
         "close": "Close",
-        "admin": "Admin [Master]",
-        "login": "SIGN IN",
-        "logout": "Sign Out",
-        "online": "ONLINE",
-        "offline": "OFFLINE",
-        "theme_visual": "Theme",
-        "light": "Light",
-        "dark": "Dark",
-        "auto": "Auto",
-        "select_language": "Select Language"
-      },
-      "header": {
-        "search_placeholder": "Search gear, techniques, posts...",
-        "recent_searches": "Recent Searches",
-        "clear": "Clear",
-        "popular_suggestions": "Popular Terms & Suggestions"
-      },
-      "hero": {
-        "scene1_tag": "SCENE 01 // SUPREME ARMOR",
-        "scene1_headline": "THE SCIENCE OF PRESSURE.",
-        "scene1_highlight": "THE ART OF OVERCOMING.",
-        "scene1_subtitle": "450g/m² to 550g/m² pearl weave gis with triple reinforced stitching and vulcanized EVA collar to resist any grip.",
-        "scene1_cta": "Explore Elite Gis",
-        "scene2_tag": "SCENE 02 // THERMAL SECOND SKIN",
-        "scene2_headline": "ZERO FRICTION ON THE MAT.",
-        "scene2_highlight": "MAXIMUM NO-GI SPEED.",
-        "scene2_subtitle": "Anatomical high-density 4-Way Stretch compression that regulates muscle temperature and shields your skin.",
-        "scene2_cta": "View Rashguards",
-        "scene3_tag": "SCENE 03 // THE CODE OF RANK",
-        "scene3_headline": "EVERY FIBER TELLS A STORY.",
-        "scene3_highlight": "YOUR BELT, YOUR LEGACY.",
-        "scene3_subtitle": "100% premium cotton belts with rank sleeve and reinforced 8 to 12-row stitching.",
-        "scene3_cta": "Explore Belts",
-        "featured_badge": "SCENE HIGHLIGHT"
-      },
-      "deal": {
-        "super_offer": "DEAL OF THE DAY",
-        "savings": "Save",
-        "historical_low": "Lowest Price"
-      },
-      "catalog": {
-        "results_header": "Catalog Results",
-        "items_count": "{{count}} product",
-        "items_count_plural": "{{count}} products",
-        "pagination": "Page {{page}} of {{total}}",
-        "filtering": "Filtering catalog...",
-        "no_products_found": "No gear found",
-        "no_products_desc": "No products match the selected filters. Try adjusting price range, brands, or categories."
-      },
-      "notification": {
-        "price_alert_title": "Price Drop Alerts",
-        "price_alert_desc": "Get instant notifications when your saved products go on sale.",
-        "enable_btn": "Enable Alerts"
+        "admin": "Admin [Master]"
       },
       "footer": {
         "navigation": "Navigation",
@@ -123,18 +65,9 @@ const resources: any = {
       "search_placeholder": "Search gear, techniques, posts...",
       "voice": {
         "listening": "Listening... Speak what you want to search.",
-        "listening_short": "LISTENING",
-        "speak_now": "Speak now...",
-        "speak_hint": "Speak clearly: product name, technique, brand, or category...",
         "searching_for": "Searching for: \"{{query}}\"",
         "not_supported": "Your browser does not support voice search.",
-        "error": "Voice search error. Try again.",
-        "start": "Voice Search (Microphone)",
-        "stop": "Stop voice search",
-        "amplitude": "Voice Amplitude",
-        "search_action": "Search Now",
-        "stop_action": "Stop Mic",
-        "cancel": "Cancel"
+        "error": "Voice search error. Try again."
       },
       "reset_confirm": "This will clear all generated news and reset the cache to ensure only Jiu-Jitsu images appear. Continue?",
       "theme": {
@@ -525,13 +458,7 @@ const resources: any = {
         "Recovery": "Recuperação",
         "Equipamentos": "Equipamentos",
         "Academias": "Academias",
-        "Filosofia": "Filosofia",
-        "beginners": "Iniciantes",
-        "competition": "Competição",
-        "training_accessories": "Acessórios de Treino",
-        "nutrition": "Nutrição Esportiva",
-        "instructionals": "Livros & Técnicas",
-        "mat_armor": "Armaduras para o Tatame"
+        "Filosofia": "Filosofia"
       },
       "nav": {
         "home": "Início",
@@ -557,59 +484,7 @@ const resources: any = {
         "back": "Voltar",
         "next": "Próximo",
         "close": "Fechar",
-        "admin": "ADMIN [Mestre]",
-        "login": "ENTRAR",
-        "logout": "Sair",
-        "online": "ONLINE",
-        "offline": "OFFLINE",
-        "theme_visual": "Tema Visual",
-        "light": "Claro",
-        "dark": "Escuro",
-        "auto": "Automático",
-        "select_language": "Selecionar Idioma"
-      },
-      "header": {
-        "search_placeholder": "Pesquisar portal...",
-        "recent_searches": "Buscas Recentes",
-        "clear": "Limpar",
-        "popular_suggestions": "Termos Populares & Sugestões"
-      },
-      "hero": {
-        "scene1_tag": "CENA 01 // A ARMADURA SUPREMA",
-        "scene1_headline": "A CIÊNCIA DA PRESSÃO.",
-        "scene1_highlight": "A ARTE DA SUPERAÇÃO.",
-        "scene1_subtitle": "Kimonos trançados de 450g/m² a 550g/m² com costuras triplas reforçadas e gola antibacteriana vulcanizada em EVA para resistir a qualquer pegada.",
-        "scene1_cta": "Explorar Kimonos de Elite",
-        "scene2_tag": "CENA 02 // SEGUNDA PELE TÉRMICA",
-        "scene2_headline": "ZERO ATRITO NO TATAME.",
-        "scene2_highlight": "MÁXIMA VELOCIDADE NO-GI.",
-        "scene2_subtitle": "Compressão anatômica 4-Way Stretch de alta densidade que regula a temperatura muscular e blinda sua pele contra queimaduras de lona e bactérias.",
-        "scene2_cta": "Ver Rashguards",
-        "scene3_tag": "CENA 03 // O CÓDIGO DA GRADUAÇÃO",
-        "scene3_headline": "CADA FIBRA CONTA UMA HISTÓRIA.",
-        "scene3_highlight": "SUA FAIXA, SEU LEGADO.",
-        "scene3_subtitle": "Faixas 100% algodão premium com ponteira preta para graus e costura reforçada de 8 a 12 pespontos para máxima durabilidade.",
-        "scene3_cta": "Conhecer Faixas",
-        "featured_badge": "DESTAQUE DA CENA"
-      },
-      "deal": {
-        "super_offer": "SUPER OFERTA DO DIA",
-        "savings": "Economia de",
-        "historical_low": "Menor Preço"
-      },
-      "catalog": {
-        "results_header": "Resultados do Acervo",
-        "items_count": "{{count}} produto",
-        "items_count_plural": "{{count}} produtos",
-        "pagination": "Página {{page}} de {{total}}",
-        "filtering": "Filtrando catálogo...",
-        "no_products_found": "Nenhum equipamento encontrado",
-        "no_products_desc": "Não encontramos produtos que correspondam a todos os filtros selecionados. Tente ajustar a faixa de preço, marcas ou categoria."
-      },
-      "notification": {
-        "price_alert_title": "Alertas de Queda de Preço",
-        "price_alert_desc": "Receba avisos instantâneos quando seus produtos favoritados entrarem em promoção.",
-        "enable_btn": "Ativar Alertas"
+        "admin": "ADMIN [Mestre]"
       },
       "footer": {
         "navigation": "Navegação",
@@ -621,18 +496,9 @@ const resources: any = {
       "search_placeholder": "Buscar equipamentos, técnicas, posts...",
       "voice": {
         "listening": "Ouvindo... Fale o que deseja buscar.",
-        "listening_short": "OUVINDO",
-        "speak_now": "Fale agora...",
-        "speak_hint": "Fale com clareza: produto, técnica, marca ou categoria...",
         "searching_for": "Buscando por: \"{{query}}\"",
         "not_supported": "Seu navegador não suporta busca por voz.",
-        "error": "Erro na busca por voz. Tente novamente.",
-        "start": "Pesquisar por voz (Microfone)",
-        "stop": "Parar gravação de voz",
-        "amplitude": "Amplitude da Voz",
-        "search_action": "Buscar Agora",
-        "stop_action": "Parar Microfone",
-        "cancel": "Cancelar"
+        "error": "Erro na busca por voz. Tente novamente."
       },
       "reset_confirm": "Isso irá apagar todas as notícias geradas e resetar o cache para garantir que apenas imagens de Jiu-Jitsu apareçam. Continuar?",
       "theme": {
@@ -1004,12 +870,6 @@ const resources: any = {
       "quick_access": "Acceso Rápido",
       "categories": {
         "All": "Todo",
-        "Vestuário": "Indumentaria",
-        "Equipamentos": "Equipos",
-        "Equipamentos de Proteção": "Equipo de Protección",
-        "Suplementos": "Suplementos",
-        "Acessórios": "Accesorios",
-        "Proteções": "Protecciones",
         "Kimonos": "Kimonos",
         "Rash Guards": "Rash Guards",
         "Rashguards": "Licras (Rashguards)",
@@ -1019,18 +879,14 @@ const resources: any = {
         "Supplements": "Suplementos",
         "Accessories": "Accesorios",
         "Faixas": "Cinturones",
+        "Suplementos": "Suplementos",
         "Casual": "Casual",
         "Mochilas": "Mochilas",
         "Lifestyle": "Estilo de Vida",
         "Recovery": "Recuperación",
+        "Equipamentos": "Equipos",
         "Academias": "Academias",
-        "Filosofia": "Filosofía",
-        "beginners": "Principiantes",
-        "competition": "Competición",
-        "training_accessories": "Accesorios de Entrenamiento",
-        "nutrition": "Nutrición Deportiva",
-        "instructionals": "Libros & Técnicas",
-        "mat_armor": "Armaduras para el Tatami"
+        "Filosofia": "Filosofía"
       },
       "nav": {
         "home": "Inicio",
@@ -1056,59 +912,7 @@ const resources: any = {
         "back": "Volver",
         "next": "Siguiente",
         "close": "Cerrar",
-        "admin": "ADMIN [Maestro]",
-        "login": "INGRESAR",
-        "logout": "Cerrar sesión",
-        "online": "EN LÍNEA",
-        "offline": "DESCONECTADO",
-        "theme_visual": "Tema Visual",
-        "light": "Claro",
-        "dark": "Oscuro",
-        "auto": "Automático",
-        "select_language": "Seleccionar Idioma"
-      },
-      "header": {
-        "search_placeholder": "Buscar en el portal...",
-        "recent_searches": "Búsquedas Recientes",
-        "clear": "Limpiar",
-        "popular_suggestions": "Términos Populares & Sugerencias"
-      },
-      "hero": {
-        "scene1_tag": "ESCENA 01 // LA ARMADURA SUPREMA",
-        "scene1_headline": "LA CIENCIA DE LA PRESIÓN.",
-        "scene1_highlight": "EL ARTE DE SUPERARSE.",
-        "scene1_subtitle": "Kimonos trenzados de 450g/m² a 550g/m² con costuras triples reforzadas y cuello vulcanizado en EVA para resistir cualquier agarre.",
-        "scene1_cta": "Explorar Kimonos de Élite",
-        "scene2_tag": "ESCENA 02 // SEGUNDA PIEL TÉRMICA",
-        "scene2_headline": "CERO FRICCIÓN EN EL TATAMI.",
-        "scene2_highlight": "MÁXIMA VELOCIDAD NO-GI.",
-        "scene2_subtitle": "Compresión anatómica 4-Way Stretch de alta densidad que regula la temperatura muscular y protege tu piel contra quemaduras de lona.",
-        "scene2_cta": "Ver Rashguards",
-        "scene3_tag": "ESCENA 03 // EL CÓDIGO DE GRADUACIÓN",
-        "scene3_headline": "CADA FIBRA CUENTA UNA HISTORIA.",
-        "scene3_highlight": "TU CINTURÓN, TU LEGADO.",
-        "scene3_subtitle": "Cinturones 100% algodón premium con costura reforzada de 8 a 12 pespuntes para máxima durabilidad.",
-        "scene3_cta": "Conocer Cinturones",
-        "featured_badge": "DESTACADO DE LA ESCENA"
-      },
-      "deal": {
-        "super_offer": "SÚPER OFERTA DEL DÍA",
-        "savings": "Ahorro de",
-        "historical_low": "Menor Precio"
-      },
-      "catalog": {
-        "results_header": "Resultados del Catálogo",
-        "items_count": "{{count}} producto",
-        "items_count_plural": "{{count}} productos",
-        "pagination": "Página {{page}} de {{total}}",
-        "filtering": "Filtrando catálogo...",
-        "no_products_found": "Ningún equipo encontrado",
-        "no_products_desc": "No encontramos productos que coincidan con todos los filtros seleccionados. Intenta ajustar el rango de precios o categoría."
-      },
-      "notification": {
-        "price_alert_title": "Alertas de Bajada de Precio",
-        "price_alert_desc": "Recibe avisos instantáneos cuando tus productos favoritos bajen de precio.",
-        "enable_btn": "Activar Alertas"
+        "admin": "ADMIN [Maestro]"
       },
       "footer": {
         "navigation": "Navegación",
@@ -1120,18 +924,9 @@ const resources: any = {
       "search_placeholder": "Buscar equipos, técnicas, posts...",
       "voice": {
         "listening": "Escuchando... Di lo que quieres buscar.",
-        "listening_short": "ESCUCHANDO",
-        "speak_now": "Hable ahora...",
-        "speak_hint": "Hable con claridad: producto, técnica, marca o categoría...",
         "searching_for": "Buscando: \"{{query}}\"",
         "not_supported": "Tu navegador no admite la búsqueda por voz.",
-        "error": "Error en la búsqueda por voz. Inténtalo de nuevo.",
-        "start": "Búsqueda por voz (Micrófono)",
-        "stop": "Detener grabación de voz",
-        "amplitude": "Amplitud de Voz",
-        "search_action": "Buscar Ahora",
-        "stop_action": "Detener Micrófono",
-        "cancel": "Cancelar"
+        "error": "Error en la búsqueda por voz. Inténtalo de nuevo."
       },
       "reset_confirm": "¿Esto borrará todas las noticias generadas y restablecerá el caché para garantizar que solo aparezcan imágenes de Jiu-Jitsu. ¿Continuar?",
       "theme": {
@@ -1561,54 +1356,7 @@ const zhTranslation = {
     "back": "返回",
     "next": "下一步",
     "close": "关闭",
-    "admin": "管理员 [大师]",
-    "login": "登录",
-    "logout": "退出登录",
-    "online": "在线",
-    "offline": "离线",
-    "theme_visual": "界面主题",
-    "light": "浅色",
-    "dark": "深色",
-    "auto": "跟随系统",
-    "select_language": "选择语言"
-  },
-  "header": {
-    "search_placeholder": "搜索装备、技术、文章...",
-    "recent_searches": "最近搜索",
-    "clear": "清除",
-    "popular_suggestions": "热门推荐与搜索建议"
-  },
-  "hero": {
-    "scene1_tag": "场景 01 // 顶级道服护甲",
-    "scene1_headline": "施压的科学。",
-    "scene1_highlight": "超越的艺术。",
-    "scene1_subtitle": "450g/m² 至 550g/m² 珍珠编织道服，三道加强缝线与 EVA 硫化防菌衣领，抵御一切强力抓把。",
-    "scene1_cta": "探索精选道服",
-    "scene2_tag": "场景 02 // 热感第二层肌肤",
-    "scene2_headline": "垫上零阻力。",
-    "scene2_highlight": "极致无道服速度。",
-    "scene2_subtitle": "高密度四向拉伸解剖学贴身压缩面料，调节肌肉温度并保护皮肤免受摩擦损伤。",
-    "scene2_cta": "查看防磨衣",
-    "scene3_tag": "场景 03 // 段位密码",
-    "scene3_headline": "每一根纤维皆是历程。",
-    "scene3_highlight": "你的腰带，你的传承。",
-    "scene3_subtitle": "100% 顶级纯棉腰带，附带黑阶段位套，8至12道加固缝线。",
-    "scene3_cta": "选购柔术腰带",
-    "featured_badge": "焦点精选"
-  },
-  "deal": {
-    "super_offer": "今日特惠",
-    "savings": "立省",
-    "historical_low": "历史最低价"
-  },
-  "catalog": {
-    "results_header": "商城装备目录",
-    "items_count": "{{count}} 件商品",
-    "items_count_plural": "{{count}} 件商品",
-    "pagination": "第 {{page}} 页，共 {{total}} 页",
-    "filtering": "正在筛选商品...",
-    "no_products_found": "未找到相关装备",
-    "no_products_desc": "没有匹配当前筛选条件的装备。请尝试调整价格、品牌或分类。"
+    "admin": "管理员 [大师]"
   },
   "footer": {
     "navigation": "导航",
@@ -1720,54 +1468,7 @@ const deTranslation = {
     "back": "Zurück",
     "next": "Weiter",
     "close": "Schließen",
-    "admin": "Admin [Meister]",
-    "login": "ANMELDEN",
-    "logout": "Abmelden",
-    "online": "ONLINE",
-    "offline": "OFFLINE",
-    "theme_visual": "Design",
-    "light": "Hell",
-    "dark": "Dunkel",
-    "auto": "Automatisch",
-    "select_language": "Sprache wählen"
-  },
-  "header": {
-    "search_placeholder": "Ausrüstung, Techniken, Artikel suchen...",
-    "recent_searches": "Letzte Suchanfragen",
-    "clear": "Löschen",
-    "popular_suggestions": "Beliebte Suchbegriffe"
-  },
-  "hero": {
-    "scene1_tag": "SZENE 01 // DIE ULTIMATIVE RÜSTUNG",
-    "scene1_headline": "DIE WISSENSCHAFT DES DRUCKS.",
-    "scene1_highlight": "DIE KUNST DES SIEGES.",
-    "scene1_subtitle": "450g/m² bis 550g/m² Pearl-Weave Gis mit dreifach verstärkten Nähten und vulkanisiertem EVA-Kragen.",
-    "scene1_cta": "Elite-Gis entdecken",
-    "scene2_tag": "SZENE 02 // THERMISCHE ZWEITE HAUT",
-    "scene2_headline": "NULL REIBUNG AUF DER MATTE.",
-    "scene2_highlight": "MAXIMALE NO-GI GESCHWINDIGKEIT.",
-    "scene2_subtitle": "Anatomische 4-Way-Stretch-Kompression, die die Muskeltemperatur reguliert und deine Haut schützt.",
-    "scene2_cta": "Rashguards ansehen",
-    "scene3_tag": "SZENE 03 // DER GRADUIERUNGSKODEX",
-    "scene3_headline": "JEDE FASER ERZÄHLT EINE GESCHICHTE.",
-    "scene3_highlight": "DEIN GÜRTEL, DEIN VERMÄCHTNIS.",
-    "scene3_subtitle": "100% Premium-Baumwollgürtel mit Rangstreifen und 8- bis 12-facher Nahtverstärkung.",
-    "scene3_cta": "Gürtel entdecken",
-    "featured_badge": "SZENEN-HIGHLIGHT"
-  },
-  "deal": {
-    "super_offer": "ANGEBOT DES TAGES",
-    "savings": "Ersparnis",
-    "historical_low": "Tiefstpreis"
-  },
-  "catalog": {
-    "results_header": "Katalogergebnisse",
-    "items_count": "{{count}} Produkt",
-    "items_count_plural": "{{count}} Produkte",
-    "pagination": "Seite {{page}} von {{total}}",
-    "filtering": "Katalog wird gefiltert...",
-    "no_products_found": "Keine Ausrüstung gefunden",
-    "no_products_desc": "Keine Produkte entsprechen den gewählten Filtern."
+    "admin": "Admin [Meister]"
   },
   "footer": {
     "navigation": "Navigation",
@@ -1879,54 +1580,7 @@ const jaTranslation = {
     "back": "戻る",
     "next": "次へ",
     "close": "閉じる",
-    "admin": "管理者 [師範]",
-    "login": "ログイン",
-    "logout": "ログアウト",
-    "online": "オンライン",
-    "offline": "オフライン",
-    "theme_visual": "テーマ",
-    "light": "ライト",
-    "dark": "ダーク",
-    "auto": "自動",
-    "select_language": "言語を選択"
-  },
-  "header": {
-    "search_placeholder": "道着、技術、記事を検索...",
-    "recent_searches": "最近の検索",
-    "clear": "クリア",
-    "popular_suggestions": "人気キーワード"
-  },
-  "hero": {
-    "scene1_tag": "シーン 01 // 至高の鎧",
-    "scene1_headline": "プレッシャーの科学。",
-    "scene1_highlight": "限界を超える技術。",
-    "scene1_subtitle": "450g/m²〜550g/m² パールウィーブ織り。三重強化ステッチと抗菌EVA襟で強固なグリップに対応。",
-    "scene1_cta": "最高峰の道着を見る",
-    "scene2_tag": "シーン 02 // 第二の皮膚",
-    "scene2_headline": "畳の上の摩擦ゼロ。",
-    "scene2_highlight": "ノーギの超高速展開。",
-    "scene2_subtitle": "高密度4方向ストレッチ圧縮素材が筋肉の温度を調節し、肌を摩擦傷から保護。",
-    "scene2_cta": "ラッシュガードを見る",
-    "scene3_tag": "シーン 03 // 帯の誇り",
-    "scene3_headline": "一筋の繊維が語る歴史。",
-    "scene3_highlight": "あなたの帯、あなたの誇り。",
-    "scene3_subtitle": "100%最高級コットン帯。8〜12本ステッチの高耐久仕様。",
-    "scene3_cta": "柔術帯を見る",
-    "featured_badge": "注目ハイライト"
-  },
-  "deal": {
-    "super_offer": "本日の特選セール",
-    "savings": "割引額",
-    "historical_low": "最安値"
-  },
-  "catalog": {
-    "results_header": "カタログ商品一覧",
-    "items_count": "{{count}} 件",
-    "items_count_plural": "{{count}} 件",
-    "pagination": "{{page}} / {{total}} ページ",
-    "filtering": "カタログを絞り込み中...",
-    "no_products_found": "商品が見つかりません",
-    "no_products_desc": "条件に一致する商品がありません。フィルターを調整してください。"
+    "admin": "管理者 [マスター]"
   },
   "footer": {
     "navigation": "ナビゲーション",
@@ -2038,54 +1692,7 @@ const frTranslation = {
     "back": "Retour",
     "next": "Suivant",
     "close": "Fermer",
-    "admin": "Admin [Maître]",
-    "login": "CONNEXION",
-    "logout": "Déconnexion",
-    "online": "EN LIGNE",
-    "offline": "HORS LIGNE",
-    "theme_visual": "Thème Visuel",
-    "light": "Clair",
-    "dark": "Sombre",
-    "auto": "Automatique",
-    "select_language": "Choisir la Langue"
-  },
-  "header": {
-    "search_placeholder": "Rechercher kimonos, techniques, articles...",
-    "recent_searches": "Recherches Récentes",
-    "clear": "Effacer",
-    "popular_suggestions": "Termes Populaires"
-  },
-  "hero": {
-    "scene1_tag": "SCÈNE 01 // L'ARMURE SUPRÊME",
-    "scene1_headline": "LA SCIENCE DE LA PRESSION.",
-    "scene1_highlight": "L'ART DU DÉPASSEMENT.",
-    "scene1_subtitle": "Kimonos Pearl Weave de 450g/m² à 550g/m² avec coutures triples renforcées et col EVA vulcanisé antibactérien.",
-    "scene1_cta": "Découvrir les Kimonos d'Élite",
-    "scene2_tag": "SCÈNE 02 // SECONDE PEAU THERMIQUE",
-    "scene2_headline": "ZÉRO FRICTION SUR LE TATAMI.",
-    "scene2_highlight": "VITESSE NO-GI MAXIMALE.",
-    "scene2_subtitle": "Compression anatomique 4-Way Stretch haute densité régulant la température musculaire et protégeant la peau.",
-    "scene2_cta": "Voir les Rashguards",
-    "scene3_tag": "SCÈNE 03 // LE CODE DES GRADES",
-    "scene3_headline": "CHAQUE FIBRE RACONTE UNE HISTOIRE.",
-    "scene3_highlight": "VOTRE CEINTURE, VOTRE HÉRITAGE.",
-    "scene3_subtitle": "Ceintures 100% coton premium avec bande de grade et 8 à 12 rangées de coutures renforcées.",
-    "scene3_cta": "Explorer les Ceintures",
-    "featured_badge": "CULTURE TATAMI"
-  },
-  "deal": {
-    "super_offer": "OFFRE DU JOUR",
-    "savings": "Économie",
-    "historical_low": "Prix le Plus Bas"
-  },
-  "catalog": {
-    "results_header": "Résultats du Catalogue",
-    "items_count": "{{count}} produit",
-    "items_count_plural": "{{count}} produits",
-    "pagination": "Page {{page}} sur {{total}}",
-    "filtering": "Filtrage du catalogue...",
-    "no_products_found": "Aucun équipement trouvé",
-    "no_products_desc": "Aucun produit ne correspond aux filtres sélectionnés."
+    "admin": "Admin [Maître]"
   },
   "footer": {
     "navigation": "Navigation",
@@ -2197,54 +1804,7 @@ const itTranslation = {
     "back": "Indietro",
     "next": "Avanti",
     "close": "Chiudi",
-    "admin": "Admin [Maestro]",
-    "login": "ACCEDI",
-    "logout": "Esci",
-    "online": "ONLINE",
-    "offline": "OFFLINE",
-    "theme_visual": "Tema",
-    "light": "Chiaro",
-    "dark": "Scuro",
-    "auto": "Automatico",
-    "select_language": "Seleziona Lingua"
-  },
-  "header": {
-    "search_placeholder": "Cerca kimono, tecniche, articoli...",
-    "recent_searches": "Ricerche Recenti",
-    "clear": "Cancella",
-    "popular_suggestions": "Termini Popolari"
-  },
-  "hero": {
-    "scene1_tag": "SCENA 01 // L'ARMATURA SUPREMA",
-    "scene1_headline": "LA SCIENZA DELLA PRESSIONE.",
-    "scene1_highlight": "L'ARTE DI SUPERARSI.",
-    "scene1_subtitle": "Kimono pearl weave da 450g/m² a 550g/m² con cuciture triple rinforzate e bavero vulcanizzato in EVA.",
-    "scene1_cta": "Esplora i Kimono d'Élite",
-    "scene2_tag": "SCENA 02 // SECONDA PELLE TERMICA",
-    "scene2_headline": "ZERO ATTRITO SUL TATAMI.",
-    "scene2_highlight": "MASSIMA VELOCITÀ NO-GI.",
-    "scene2_subtitle": "Compressione anatomica 4-Way Stretch ad alta densità che regola la temperatura muscolare e protegge la pelle.",
-    "scene2_cta": "Vedi Rashguard",
-    "scene3_tag": "SCENA 03 // IL CODICE DEL GRADO",
-    "scene3_headline": "OGNI FIBRA RACCONTA UNA STORIA.",
-    "scene3_highlight": "LA TUA CINTURA, LA TUA EREDITÀ.",
-    "scene3_subtitle": "Cinture in 100% cotone premium con barretta dei gradi e cuciture rinforzate da 8 a 12 linee.",
-    "scene3_cta": "Scopri le Cinture",
-    "featured_badge": "IN EVIDENZA"
-  },
-  "deal": {
-    "super_offer": "OFFERTA DEL GIORNO",
-    "savings": "Risparmio",
-    "historical_low": "Prezzo Più Basso"
-  },
-  "catalog": {
-    "results_header": "Risultati del Catalogo",
-    "items_count": "{{count}} prodotto",
-    "items_count_plural": "{{count}} prodotti",
-    "pagination": "Pagina {{page}} di {{total}}",
-    "filtering": "Filtraggio catalogo...",
-    "no_products_found": "Nessun prodotto trovato",
-    "no_products_desc": "Nessun prodotto corrisponde ai filtri selezionati."
+    "admin": "Admin [Maestro]"
   },
   "footer": {
     "navigation": "Navigazione",
@@ -2356,54 +1916,7 @@ const ruTranslation = {
     "back": "Назад",
     "next": "Далее",
     "close": "Закрыть",
-    "admin": "Админ [Мастер]",
-    "login": "ВОЙТИ",
-    "logout": "Выйти",
-    "online": "ОНЛАЙН",
-    "offline": "ОФЛАЙН",
-    "theme_visual": "Тема",
-    "light": "Светлая",
-    "dark": "Тёмная",
-    "auto": "Авто",
-    "select_language": "Выбрать Язык"
-  },
-  "header": {
-    "search_placeholder": "Поиск кимоно, техник, статей...",
-    "recent_searches": "Недавние поиски",
-    "clear": "Очистить",
-    "popular_suggestions": "Популярные запросы"
-  },
-  "hero": {
-    "scene1_tag": "СЦЕНА 01 // ВЫСШАЯ БРОНЯ",
-    "scene1_headline": "НАУКА ДАВЛЕНИЯ.",
-    "scene1_highlight": "ИСКУССТВО ПОБЕДЫ.",
-    "scene1_subtitle": "Кимоно плотностью от 450 до 550 г/м² с тройными усиленными швами и воротником из вулканизированной EVA.",
-    "scene1_cta": "Выбрать Элитные Кимоно",
-    "scene2_tag": "СЦЕНА 02 // ВТОРАЯ ТЕРМОКОЖА",
-    "scene2_headline": "НУЛЕВОЕ ТРЕНИЕ НА ТАТАМИ.",
-    "scene2_highlight": "МАКСИМАЛЬНАЯ СКОРОСТЬ NO-GI.",
-    "scene2_subtitle": "Анатомическая 4-way stretch компрессия высокой плотности для терморегуляции и защиты кожи.",
-    "scene2_cta": "Смотреть Рашгарды",
-    "scene3_tag": "СЦЕНА 03 // КОДЕКС ПОЯСА",
-    "scene3_headline": "КАЖДОЕ ВОЛОКНО — ЭТО ИСТОРИЯ.",
-    "scene3_highlight": "ТВОЙ ПОЯС, ТВОЁ НАСЛЕДИЕ.",
-    "scene3_subtitle": "Пояса из 100% премиум-хлопка с планкой для нашивок и усиленной строчкой.",
-    "scene3_cta": "Выбрать Пояса",
-    "featured_badge": "ХИТ СЦЕНЫ"
-  },
-  "deal": {
-    "super_offer": "ПРЕДЛОЖЕНИЕ ДНЯ",
-    "savings": "Экономия",
-    "historical_low": "Лучшая Цена"
-  },
-  "catalog": {
-    "results_header": "Результаты Каталога",
-    "items_count": "{{count}} товар",
-    "items_count_plural": "{{count}} товаров",
-    "pagination": "Страница {{page}} из {{total}}",
-    "filtering": "Фильтрация каталога...",
-    "no_products_found": "Экипировка не найдена",
-    "no_products_desc": "По выбранным фильтрам ничего не найдено."
+    "admin": "Админ [Мастер]"
   },
   "footer": {
     "navigation": "Навигация",
@@ -2512,57 +2025,10 @@ const hiTranslation = {
     "success": "सफलता",
     "cancel": "रद्द करें",
     "remove": "हटाएं",
-    "back": "वापस",
+    "back": "पीछे",
     "next": "आगे",
     "close": "बंद करें",
-    "admin": "एडमिन [मास्टर]",
-    "login": "साइन इन",
-    "logout": "लॉग आउट",
-    "online": "ऑनलाइन",
-    "offline": "ऑफ़लाइन",
-    "theme_visual": "थीम",
-    "light": "लाइट",
-    "dark": "डार्क",
-    "auto": "ऑटो",
-    "select_language": "भाषा चुनें"
-  },
-  "header": {
-    "search_placeholder": "गियर, तकनीक, लेख खोजें...",
-    "recent_searches": "हाल की खोजें",
-    "clear": "हटाएं",
-    "popular_suggestions": "लोकप्रिय सुझाव"
-  },
-  "hero": {
-    "scene1_tag": "दृश्य 01 // सर्वोच्च कवच",
-    "scene1_headline": "दबाव का विज्ञान।",
-    "scene1_highlight": "विजय की कला।",
-    "scene1_subtitle": "450g/m² से 550g/m² पर्ल वीव किमोनो, ट्रिपल प्रबलित सिलाई और ईवीए कॉलर के साथ।",
-    "scene1_cta": "कुलीन किमोनो देखें",
-    "scene2_tag": "दृश्य 02 // थर्मल दूसरी त्वचा",
-    "scene2_headline": "चटाई पर शून्य घर्षण।",
-    "scene2_highlight": "अधिकतम नो-गी गति।",
-    "scene2_subtitle": "उच्च घनत्व वाला 4-वे स्ट्रेच संपीड़न जो मांसपेशियों के तापमान को नियंत्रित करता है।",
-    "scene2_cta": "रैशगार्ड देखें",
-    "scene3_tag": "दृश्य 03 // बेल्ट की विरासत",
-    "scene3_headline": "हर धागा एक कहानी कहता है।",
-    "scene3_highlight": "आपकी बेल्ट, आपकी विरासत।",
-    "scene3_subtitle": "रैंक स्लीव और 8 से 12-पंक्ति सिलाई के साथ 100% प्रीमियम सूती बेल्ट।",
-    "scene3_cta": "बेल्ट देखें",
-    "featured_badge": "विशेष हाइलाइट"
-  },
-  "deal": {
-    "super_offer": "आज की सुपर डील",
-    "savings": "बचत",
-    "historical_low": "न्यूनतम मूल्य"
-  },
-  "catalog": {
-    "results_header": "कैटलॉग परिणाम",
-    "items_count": "{{count}} उत्पाद",
-    "items_count_plural": "{{count}} उत्पाद",
-    "pagination": "पृष्ठ {{page}} / {{total}}",
-    "filtering": "कैटलॉग फ़िल्टर हो रहा है...",
-    "no_products_found": "कोई गियर नहीं मिला",
-    "no_products_desc": "चुने गए फ़िल्टर से कोई उत्पाद मेल नहीं खाता।"
+    "admin": "एडमिन [मास्टर]"
   },
   "footer": {
     "navigation": "नेविगेशन",
@@ -2670,58 +2136,11 @@ const koTranslation = {
     "error": "오류",
     "success": "성공",
     "cancel": "취소",
-    "remove": "삭제",
+    "remove": "제거",
     "back": "뒤로",
     "next": "다음",
     "close": "닫기",
-    "admin": "관리자 [마스터]",
-    "login": "로그인",
-    "logout": "로그아웃",
-    "online": "온라인",
-    "offline": "오프라인",
-    "theme_visual": "화면 테마",
-    "light": "라이트",
-    "dark": "다크",
-    "auto": "자동",
-    "select_language": "언어 선택"
-  },
-  "header": {
-    "search_placeholder": "도복, 기술, 게시물 검색...",
-    "recent_searches": "최근 검색어",
-    "clear": "지우기",
-    "popular_suggestions": "인기 추천 검색어"
-  },
-  "hero": {
-    "scene1_tag": "SCENE 01 // 궁극의 도복 갑옷",
-    "scene1_headline": "압박의 과학.",
-    "scene1_highlight": "승리의 예술.",
-    "scene1_subtitle": "450g/m² ~ 550g/m² 펄위브 원단, 삼중 보강 스티치와 고강도 EVA 깃으로 완성된 최상급 도복.",
-    "scene1_cta": "엘리트 도복 보기",
-    "scene2_tag": "SCENE 02 // 서멀 세컨드 스킨",
-    "scene2_headline": "매트 위 마찰 제로.",
-    "scene2_highlight": "노기 최고의 속도.",
-    "scene2_subtitle": "근육 온도를 조절하고 찰과상으로부터 피부를 보호하는 고밀도 4방향 스트레치 래시가드.",
-    "scene2_cta": "래시가드 보기",
-    "scene3_tag": "SCENE 03 // 벨트의 증명",
-    "scene3_headline": "모든 올마다 담긴 땀과 역사.",
-    "scene3_highlight": "당신의 벨트, 당신의 유산.",
-    "scene3_subtitle": "그라데이션 슬리브와 8~12줄 보강 박음질의 100% 프리미엄 코튼 벨트.",
-    "scene3_cta": "주짓수 벨트 보기",
-    "featured_badge": "매트 하이라이트"
-  },
-  "deal": {
-    "super_offer": "오늘의 특가",
-    "savings": "할인액",
-    "historical_low": "역대 최저가"
-  },
-  "catalog": {
-    "results_header": "카탈로그 검색 결과",
-    "items_count": "{{count}}개 상품",
-    "items_count_plural": "{{count}}개 상품",
-    "pagination": "{{page}} / {{total}} 페이지",
-    "filtering": "카탈로그 필터링 중...",
-    "no_products_found": "상품을 찾을 수 없습니다",
-    "no_products_desc": "선택한 조건과 일치하는 상품이 없습니다. 필터를 조정해 보세요."
+    "admin": "관리자 [마스터]"
   },
   "footer": {
     "navigation": "네비게이션",
@@ -2793,39 +2212,15 @@ resources.ru = { translation: mergeWithFallback(resources.en.translation, ruTran
 resources.hi = { translation: mergeWithFallback(resources.en.translation, hiTranslation) };
 resources.ko = { translation: mergeWithFallback(resources.en.translation, koTranslation) };
 
-export const SUPPORTED_LANGUAGES = ['pt', 'en', 'es', 'zh', 'de', 'ja', 'fr', 'it', 'ru', 'hi', 'ko'] as const;
-export type SupportedLanguage = typeof SUPPORTED_LANGUAGES[number];
-
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
     fallbackLng: 'pt',
-    supportedLngs: SUPPORTED_LANGUAGES as unknown as string[],
-    nonExplicitSupportedLngs: true,
-    load: 'languageOnly',
-    detection: {
-      order: ['localStorage', 'navigator', 'htmlTag'],
-      lookupLocalStorage: 'i18nextLng',
-      caches: ['localStorage']
-    },
     interpolation: {
       escapeValue: false
     }
   });
-
-i18n.on('languageChanged', (lng) => {
-  if (typeof document !== 'undefined') {
-    const rootLang = lng ? lng.split('-')[0] : 'pt';
-    document.documentElement.lang = rootLang;
-    try {
-      localStorage.setItem('i18nextLng', rootLang);
-      localStorage.setItem('oss_preferred_language', rootLang);
-    } catch {
-      // ignore
-    }
-  }
-});
 
 export default i18n;

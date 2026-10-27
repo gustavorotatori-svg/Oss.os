@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useTranslation } from 'react-i18next';
 import {
   Play,
   Pause,
@@ -62,7 +61,6 @@ export const CinematicHero: React.FC<CinematicHeroProps> = ({
   onSelectCategory,
   onOpenFilterDrawer
 }) => {
-  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentSceneIndex, setCurrentSceneIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -76,47 +74,47 @@ export const CinematicHero: React.FC<CinematicHeroProps> = ({
   const oscRef = useRef<OscillatorNode | null>(null);
   const oscHarmonicRef = useRef<OscillatorNode | null>(null);
 
-  const scenes: CinematicScene[] = useMemo(() => [
+  const scenes: CinematicScene[] = [
     {
       id: 'scene-gi-white',
       number: '01',
-      tag: t('hero.scene1_tag', { defaultValue: 'CENA 01 // A ARMADURA SUPREMA' }),
+      tag: 'CENA 01 // A ARMADURA SUPREMA',
       kanji: '柔術 • 押忍',
-      headline: t('hero.scene1_headline', { defaultValue: 'A CIÊNCIA DA PRESSÃO.' }),
-      highlightWord: t('hero.scene1_highlight', { defaultValue: 'A ARTE DA SUPERAÇÃO.' }),
-      subtitle: t('hero.scene1_subtitle', { defaultValue: 'Kimonos trançados de 450g/m² a 550g/m² com costuras triplas reforçadas e gola antibacteriana vulcanizada em EVA para resistir a qualquer pegada.' }),
+      headline: 'A CIÊNCIA DA PRESSÃO.',
+      highlightWord: 'A ARTE DA SUPERAÇÃO.',
+      subtitle: 'Kimonos trançados de 450g/m² a 550g/m² com costuras triplas reforçadas e gola antibacteriana vulcanizada em EVA para resistir a qualquer pegada.',
       specPill: 'Tecido Pérola • 100% Algodão Pré-Encolhido • Homologado IBJJF',
       imageUrl: bjjWhiteGiHero || 'https://images.unsplash.com/photo-1555597673-b21d5c935865?q=80&w=1920&auto=format&fit=crop',
       category: 'Kimonos',
-      ctaText: t('hero.scene1_cta', { defaultValue: 'Explorar Kimonos de Elite' }),
+      ctaText: 'Explorar Kimonos de Elite',
       accentColor: '#22c55e'
     },
     {
       id: 'scene-nogi-rashguard',
       number: '02',
-      tag: t('hero.scene2_tag', { defaultValue: 'CENA 02 // SEGUNDA PELE TÉRMICA' }),
+      tag: 'CENA 02 // SEGUNDA PELE TÉRMICA',
       kanji: '無着 • 闘志',
-      headline: t('hero.scene2_headline', { defaultValue: 'ZERO ATRITO NO TATAME.' }),
-      highlightWord: t('hero.scene2_highlight', { defaultValue: 'MÁXIMA VELOCIDADE NO-GI.' }),
-      subtitle: t('hero.scene2_subtitle', { defaultValue: 'Compressão anatômica 4-Way Stretch de alta densidade que regula a temperatura muscular e blinda sua pele contra queimaduras de lona e bactérias.' }),
+      headline: 'ZERO ATRITO NO TATAME.',
+      highlightWord: 'MÁXIMA VELOCIDADE NO-GI.',
+      subtitle: 'Compressão anatômica 4-Way Stretch de alta densidade que regula a temperatura muscular e blinda sua pele contra queimaduras de lona e bactérias.',
       specPill: 'Costuras Planas Flatlock • Proteção UV50+ • Respirabilidade Extrema',
       imageUrl: bjjHalfSumoHero || 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1920&auto=format&fit=crop',
       category: 'Rashguards',
-      ctaText: t('hero.scene2_cta', { defaultValue: 'Ver Linha No-Gi & Rashguards' }),
+      ctaText: 'Ver Linha No-Gi & Rashguards',
       accentColor: '#eab308'
     },
     {
       id: 'scene-belts-legacy',
       number: '03',
-      tag: t('hero.scene3_tag', { defaultValue: 'CENA 03 // O PESO DA GRADUAÇÃO' }),
+      tag: 'CENA 03 // O PESO DA GRADUAÇÃO',
       kanji: '道 • 継続',
-      headline: t('hero.scene3_headline', { defaultValue: 'CADA NÓ UMA LIÇÃO.' }),
-      highlightWord: t('hero.scene3_highlight', { defaultValue: 'CADA LISTRA UMA VITÓRIA.' }),
-      subtitle: t('hero.scene3_subtitle', { defaultValue: 'Faixas artesanais estruturadas com miolo de lona pesada, 12 costuras perfeitamente alinhadas e ponteira tradicional em sarja de alta gramatura.' }),
+      headline: 'CADA NÓ UMA LIÇÃO.',
+      highlightWord: 'CADA LISTRA UMA VITÓRIA.',
+      subtitle: 'Faixas artesanais estruturadas com miolo de lona pesada, 12 costuras perfeitamente alinhadas e ponteira tradicional em sarja de alta gramatura.',
       specPill: '100% Algodão Pesado • Espessura 4.5mm • Rigidez & Caimento Clássico',
       imageUrl: bjjBeltsHero || 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1920&auto=format&fit=crop',
       category: 'Faixas',
-      ctaText: t('hero.scene3_cta', { defaultValue: 'Conhecer Faixas de Graduação' }),
+      ctaText: 'Conhecer Faixas de Graduação',
       accentColor: '#3b82f6'
     },
     {
@@ -133,7 +131,7 @@ export const CinematicHero: React.FC<CinematicHeroProps> = ({
       ctaText: 'Acessar Edição Black Mat',
       accentColor: '#ef4444'
     }
-  ], [t]);
+  ];
 
   const currentScene = scenes[currentSceneIndex];
 
@@ -459,7 +457,7 @@ export const CinematicHero: React.FC<CinematicHeroProps> = ({
                 initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black font-sans uppercase tracking-tight text-white leading-[1.08] break-words"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black font-sans uppercase tracking-tight text-white leading-[1.05]"
               >
                 {currentScene.headline}{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-200 via-white to-zinc-400 block sm:inline">
@@ -508,7 +506,7 @@ export const CinematicHero: React.FC<CinematicHeroProps> = ({
               >
                 <div className="absolute top-2 right-2 px-2 py-0.5 bg-green-500/20 border border-green-500/40 text-green-400 font-mono text-[8px] font-black uppercase tracking-widest flex items-center gap-1">
                   <Flame size={10} className="animate-pulse" />
-                  {t('hero.featured_badge', { defaultValue: 'DESTAQUE DA CENA' })}
+                  DESTAQUE DA CENA
                 </div>
 
                 <div className="flex gap-3.5 items-center">

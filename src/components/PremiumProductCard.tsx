@@ -24,7 +24,6 @@ import BJJImage from './BJJImage';
 import { OssLogo } from '@/components/Logo';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, ReferenceLine, Tooltip as RechartsTooltip } from 'recharts';
-import { getCurrencyCode, getCurrencySymbol, formatPrice } from '@/src/lib/currency';
 
 interface PremiumProductCardProps {
   product: Product;
@@ -1818,7 +1817,7 @@ const PremiumProductCard: React.FC<PremiumProductCardProps> = ({
                 )}
               </div>
               <div className="flex items-baseline gap-1.5 flex-wrap">
-                 <span className="font-mono text-[10px] text-zinc-500">{getCurrencyCode(i18n.language)}</span>
+                 <span className="font-mono text-[10px] text-zinc-500">{i18n.language === 'en' ? 'USD' : 'BRL'}</span>
                  {(() => {
                    const effectivePrice = (cardOffersList[0]?.price && cardOffersList[0].price < product.price) 
                      ? cardOffersList[0].price 
@@ -1833,7 +1832,7 @@ const PremiumProductCard: React.FC<PremiumProductCardProps> = ({
                          transition={{ type: "spring", stiffness: 450, damping: 20 }}
                          className="text-2xl font-black tracking-tighter text-black dark:text-white inline-flex items-center gap-2"
                        >
-                         {formatPrice(effectivePrice, i18n.language)}
+                         {effectivePrice.toLocaleString(i18n.language === 'en' ? 'en-US' : 'pt-BR', { minimumFractionDigits: 2 })}
                          {isRecent && mainPriceUpdate.isPositive && (
                            <motion.span
                              initial={{ opacity: 0, scale: 0.6 }}

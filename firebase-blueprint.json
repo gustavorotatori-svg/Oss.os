@@ -104,32 +104,6 @@
         }
       },
       "required": ["displayName", "points"]
-    },
-    "OfferSubscription": {
-      "title": "OfferSubscription",
-      "description": "User subscription for offer notifications on specific products or categories",
-      "type": "object",
-      "properties": {
-        "targetType": { "type": "string" },
-        "targetId": { "type": "string" },
-        "targetName": { "type": "string" },
-        "channels": {
-          "type": "object",
-          "properties": {
-            "email": { "type": "boolean" },
-            "inApp": { "type": "boolean" }
-          }
-        },
-        "email": { "type": "string" },
-        "triggerOnPriceDrop": { "type": "boolean" },
-        "triggerOnNewDeal": { "type": "boolean" },
-        "discountThresholdPct": { "type": "number" },
-        "targetPrice": { "type": "number" },
-        "active": { "type": "boolean" },
-        "createdAt": { "type": "string", "format": "date-time" },
-        "updatedAt": { "type": "string", "format": "date-time" }
-      },
-      "required": ["targetType", "targetId", "targetName", "active"]
     }
   },
   "firestore": {
@@ -197,10 +171,6 @@
         }
       },
       "description": "User specific push and in-app technical notifications"
-    },
-    "/users/{userId}/offerSubscriptions/{subscriptionId}": {
-      "schema": "OfferSubscription",
-      "description": "User offer notifications subscriptions for specific products or entire categories"
     }
   }
 }

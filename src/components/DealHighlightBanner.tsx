@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
-import { useTranslation } from 'react-i18next';
 import { Flame, ShoppingBag, Zap, Tag, ArrowRight, ShieldCheck, Clock, Percent, Star, Check, Scale } from 'lucide-react';
 import { Product } from '../types';
 import BJJImage from './BJJImage';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { formatPrice } from '@/src/lib/currency';
 
 interface DealHighlightBannerProps {
   productList: Product[];
@@ -23,7 +21,6 @@ export const DealHighlightBanner: React.FC<DealHighlightBannerProps> = ({
   onToggleCompare,
   isComparing = false,
 }) => {
-  const { t, i18n } = useTranslation();
   // Find the deal with the highest percentage discount
   const topDeal = useMemo(() => {
     if (!productList || productList.length === 0) return null;
@@ -78,14 +75,14 @@ export const DealHighlightBanner: React.FC<DealHighlightBannerProps> = ({
             <div className="flex flex-wrap items-center gap-2.5">
               <span className="inline-flex items-center gap-1.5 bg-[#cc0000] text-white font-mono text-[10px] font-black uppercase px-2.5 py-1 tracking-wider">
                 <Flame size={13} className="text-amber-300" />
-                {t('deal.super_offer', { defaultValue: 'SUPER OFERTA' })} • {discountPct}% OFF
+                DESTAQUE • {discountPct}% OFF
               </span>
 
               {/* Average Rating */}
               <div 
                 onClick={() => onSelectProduct?.(topDeal)} 
                 className="flex items-center gap-1.5 bg-zinc-900/90 text-zinc-300 px-2.5 py-1 border border-zinc-800 font-mono text-[10px] cursor-pointer hover:border-amber-500/60 transition-colors"
-                title={t('product.reviews', { defaultValue: 'Avaliações dos atletas' })}
+                title="Avaliações dos atletas"
               >
                 <div className="flex items-center gap-0.5 text-amber-400">
                   {[1, 2, 3, 4, 5].map((st) => (
@@ -115,38 +112,34 @@ export const DealHighlightBanner: React.FC<DealHighlightBannerProps> = ({
             {/* Price Box & Savings Callout */}
             <div className="pt-2 flex flex-wrap items-end gap-4 p-4 bg-zinc-900/80 border border-zinc-800/80">
               <div>
-                <span className="text-[10px] font-mono text-zinc-400 uppercase block font-semibold">
-                  {t('product.best_price', { defaultValue: 'Preço Promocional' })}
-                </span>
+                <span className="text-[10px] font-mono text-zinc-400 uppercase block font-semibold">Preço Promocional</span>
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl sm:text-4xl font-black font-mono text-green-400 tracking-tight">
-                    {formatPrice(topDeal.price, i18n.language)}
+                    R$ {topDeal.price.toFixed(2)}
                   </span>
                   <span className="text-sm font-mono text-zinc-500 line-through">
-                    {formatPrice(originalPrice, i18n.language)}
+                    R$ {originalPrice.toFixed(2)}
                   </span>
                 </div>
               </div>
 
               <div className="border-l border-zinc-800 pl-4 py-1">
-                <span className="text-[9px] font-mono uppercase text-zinc-400 font-bold block">
-                  {t('deal.savings', { defaultValue: 'ECONOMIA' })}
-                </span>
+                <span className="text-[9px] font-mono uppercase text-zinc-400 font-bold block">ECONOMIA</span>
                 <span className="text-sm font-bold font-mono text-white">
-                  {formatPrice(originalPrice - topDeal.price, i18n.language)}
+                  R$ {savingsAmount}
                 </span>
               </div>
             </div>
 
             {/* CTAs */}
-            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div className="pt-2 flex flex-wrap items-center gap-3">
               <Button
                 onClick={() => onSelectProduct ? onSelectProduct(topDeal) : null}
-                className="w-full sm:w-auto bg-green-600 hover:bg-green-500 text-black font-mono font-black uppercase text-xs tracking-wider px-6 py-5 rounded-none cursor-pointer transition-all flex items-center justify-center gap-2"
+                className="bg-green-600 hover:bg-green-500 text-black font-mono font-black uppercase text-xs tracking-wider px-6 py-5 rounded-none cursor-pointer transition-all flex items-center gap-2"
                 id="deal-banner-view-btn"
               >
                 <Zap size={14} fill="black" />
-                {t('product.buy_now', { defaultValue: 'Garantir Oferta' })}
+                Garantir Oferta
                 <ArrowRight size={14} />
               </Button>
 
@@ -154,11 +147,11 @@ export const DealHighlightBanner: React.FC<DealHighlightBannerProps> = ({
                 <Button
                   onClick={() => onAddToCart(topDeal)}
                   variant="outline"
-                  className="w-full sm:w-auto bg-zinc-900 hover:bg-white hover:text-black text-white border-zinc-700 font-mono font-bold uppercase text-xs px-5 py-5 rounded-none cursor-pointer transition-colors flex items-center justify-center gap-2"
+                  className="bg-zinc-900 hover:bg-white hover:text-black text-white border-zinc-700 font-mono font-bold uppercase text-xs px-5 py-5 rounded-none cursor-pointer transition-colors flex items-center gap-2"
                   id="deal-banner-cart-btn"
                 >
                   <ShoppingBag size={14} />
-                  {t('product.add_to_cart', { defaultValue: 'Adicionar à Sacola' })}
+                  Adicionar à Sacola
                 </Button>
               )}
             </div>
@@ -166,7 +159,7 @@ export const DealHighlightBanner: React.FC<DealHighlightBannerProps> = ({
             {/* Guarantees */}
             <div className="pt-1 flex items-center gap-2 text-[10px] font-mono text-zinc-400">
               <ShieldCheck size={13} className="text-green-500" />
-              <span>{t('consent.text2', { defaultValue: 'Vendedor Homologado & Produto Original' })}</span>
+              <span>Vendedor Homologado & Produto Original</span>
             </div>
 
           </div>

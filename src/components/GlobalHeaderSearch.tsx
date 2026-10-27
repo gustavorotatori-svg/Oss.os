@@ -1,19 +1,12 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useTranslation } from 'react-i18next';
 import { 
   Search, X, ShoppingBag, Newspaper, Tag, ArrowRight, 
-  Sparkles, History, Flame, ChevronRight, Scale, Mic, MicOff,
-  ExternalLink, BellRing, Layers, Filter, Check, Volume2
+  Sparkles, History, Flame, ChevronRight, Scale, Mic,
+  ExternalLink, BellRing, Layers, Filter
 } from 'lucide-react';
 import { Product, BlogPost } from '../types';
 import ImageOptimization from '@/components/ImageOptimization';
-import { useVoiceSearch } from '../hooks/useVoiceSearch';
-import { 
-  VoiceExpandingRing, 
-  DynamicWaveform, 
-  VoiceWaveformEqualizerCombo 
-} from './VoiceAmplitudeVisualizer';
 
 export interface GlobalHeaderSearchProps {
   productList: Product[];
@@ -61,8 +54,6 @@ export const GlobalHeaderSearch: React.FC<GlobalHeaderSearchProps> = ({
   onSetBlogSearchQuery,
   className = ''
 }) => {
-  const { t, i18n } = useTranslation();
-  const currentLang = i18n?.language === 'pt' ? 'pt-BR' : i18n?.language === 'es' ? 'es-ES' : 'en-US';
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'all' | 'products' | 'articles' | 'categories'>('all');
@@ -70,18 +61,6 @@ export const GlobalHeaderSearch: React.FC<GlobalHeaderSearchProps> = ({
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
-
-  const voiceSearch = useVoiceSearch({
-    lang: currentLang,
-    onTranscriptChange: (text) => {
-      setQuery(text);
-    },
-    onTranscriptFinal: (text) => {
-      if (text.trim()) {
-        handleSearchSubmit(text.trim());
-      }
-    }
-  });
 
   // Load recent searches from localStorage
   useEffect(() => {
@@ -320,146 +299,32 @@ export const GlobalHeaderSearch: React.FC<GlobalHeaderSearchProps> = ({
   return (
     <div className={`relative ${className}`}>
       {/* Header Search Trigger Input (Desktop) */}
-      {voiceSearch.isListening ? (
-        <div 
-          onClick={() => setIsOpen(true)}
-          className="hidden md:flex items-center justify-between gap-2 px-3 py-1.5 bg-red-500/10 dark:bg-red-950/40 hover:bg-red-500/15 border border-red-500/70 dark:border-red-500/80 rounded-none transition-all w-72 lg:w-96 group cursor-pointer select-none"
-          style={{
-            boxShadow: `0 0 ${10 + voiceSearch.amplitude * 24}px rgba(239, 68, 68, ${0.28 + voiceSearch.amplitude * 0.45})`,
-            borderColor: voiceSearch.amplitude > 0.7 ? '#ef4444' : voiceSearch.amplitude > 0.4 ? '#f87171' : 'rgba(239, 68, 68, 0.75)'
-          }}
-          title={t('voice.listening', { defaultValue: 'Microfone ouvindo em tempo real. Clique para abrir ou use os controles.' })}
-          id="global-header-search-trigger-listening"
-        >
-          {/* Left: Dynamic Expanding/Contracting Voice Ring & Label */}
-          <div className="flex items-center gap-1.5 shrink-0">
-            <VoiceExpandingRing
-              size="sm"
-              amplitude={voiceSearch.amplitude}
-              isListening={voiceSearch.isListening}
-              showIcon={false}
-            />
-            <span className="text-[10px] font-mono font-black text-red-600 dark:text-red-400 tracking-wider uppercase">
-              {t('voice.listening_short', { defaultValue: 'OUVINDO' })}
-            </span>
-          </div>
-
-          {/* Center: Live spoken transcript preview */}
-          <div className="flex-1 truncate mx-1 text-[11px] font-mono text-zinc-800 dark:text-zinc-200 font-medium">
-            {voiceSearch.transcript ? (
-              <span className="text-black dark:text-white font-bold italic truncate">"{voiceSearch.transcript}"</span>
-            ) : (
-              <span className="text-zinc-400 italic animate-pulse">{t('voice.speak_now', { defaultValue: 'Fale agora...' })}</span>
-            )}
-          </div>
-
-          {/* Dynamic Audio Input Waveform & Equalizer Visualizer (Scales with Real-time Amplitude) */}
-          <div 
-            className="flex items-center gap-1 shrink-0 px-1.5 py-0.5 bg-black/10 dark:bg-white/10 rounded-xs border border-zinc-300 dark:border-zinc-800"
-            title={`${t('voice.amplitude', { defaultValue: 'Amplitude da voz' })}: ${Math.round(voiceSearch.amplitude * 100)}%`}
-          >
-            <VoiceWaveformEqualizerCombo
-              amplitude={voiceSearch.amplitude}
-              frequencyBands={voiceSearch.frequencyBands}
-            />
-          </div>
-
-          {/* Quick Actions (Confirm / Cancel) */}
-          <div className="flex items-center gap-0.5 shrink-0" onClick={(e) => e.stopPropagation()}>
-            <button
-              type="button"
-              onClick={() => {
-                if (voiceSearch.transcript.trim()) {
-                  handleSearchSubmit(voiceSearch.transcript.trim());
-                }
-                voiceSearch.stopListening();
-              }}
-              className="p-1 text-green-600 dark:text-green-400 hover:bg-green-500/20 rounded transition-colors"
-              title={t('voice.search_action', { defaultValue: 'Buscar transcrição falada' })}
-            >
-              <Check size={14} />
-            </button>
-            <button
-              type="button"
-              onClick={() => voiceSearch.cancelListening()}
-              className="p-1 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 rounded transition-colors"
-              title={t('voice.cancel', { defaultValue: 'Cancelar' })}
-            >
-              <X size={14} />
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div 
-          onClick={() => setIsOpen(true)}
-          className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-zinc-100/80 dark:bg-zinc-900/80 hover:bg-zinc-200/80 dark:hover:bg-zinc-800/80 text-zinc-500 hover:text-black dark:hover:text-white border border-zinc-200/80 dark:border-zinc-800/80 rounded-none cursor-pointer transition-all w-52 lg:w-72 group shadow-inner select-none"
-          title={t('header.search_placeholder', { defaultValue: 'Buscar produtos, artigos e categorias (Ctrl+K)' })}
-          id="global-header-search-trigger"
-        >
-          <Search size={14} className="text-zinc-400 group-hover:text-green-600 transition-colors shrink-0" />
-          <span className="text-[10px] font-mono font-medium truncate flex-1 text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-300">
-            {query.trim() || t('header.search_placeholder', { defaultValue: 'Pesquisar portal...' })}
-          </span>
-          <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[8px] font-mono font-bold text-zinc-400 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded shadow-2xs">
-            ⌘K
-          </kbd>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              voiceSearch.startListening();
-            }}
-            className="p-1 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 transition-colors rounded"
-            title={t('voice.start', { defaultValue: 'Pesquisar por voz (Microfone)' })}
-            id="global-header-voice-mic-btn"
-          >
-            <Mic size={14} />
-          </button>
-        </div>
-      )}
-
-      {/* Header Search & Mic Buttons (Mobile) */}
-      <div className="flex md:hidden items-center gap-0.5 shrink-0">
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setIsOpen(true)}
-          className="w-8 h-8 flex items-center justify-center text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all rounded-none shrink-0 cursor-pointer"
-          title={t('header.search_placeholder', { defaultValue: 'Abrir Busca Global' })}
-          id="global-header-search-mobile-btn"
-        >
-          <Search size={17} />
-        </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => {
-            if (voiceSearch.isListening) {
-              voiceSearch.stopListening();
-            } else {
-              voiceSearch.startListening();
-            }
-          }}
-          className={`w-8 h-8 flex items-center justify-center transition-all rounded-none relative shrink-0 cursor-pointer ${
-            voiceSearch.isListening
-              ? 'text-red-500 bg-red-500/15 ring-2 ring-red-500/40 shadow-xs'
-              : 'text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800'
-          }`}
-          title={voiceSearch.isListening ? t('voice.listening') : t('voice.start')}
-          id="global-header-search-mobile-mic-btn"
-        >
-          {voiceSearch.isListening ? (
-            <VoiceExpandingRing
-              size="sm"
-              amplitude={voiceSearch.amplitude}
-              isListening={voiceSearch.isListening}
-              showIcon={true}
-            />
-          ) : (
-            <Mic size={17} />
-          )}
-        </motion.button>
+      <div 
+        onClick={() => setIsOpen(true)}
+        className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-zinc-100/80 dark:bg-zinc-900/80 hover:bg-zinc-200/80 dark:hover:bg-zinc-800/80 text-zinc-500 hover:text-black dark:hover:text-white border border-zinc-200/80 dark:border-zinc-800/80 rounded-none cursor-pointer transition-all w-52 lg:w-72 group shadow-inner select-none"
+        title="Buscar produtos, artigos e categorias (Ctrl+K)"
+        id="global-header-search-trigger"
+      >
+        <Search size={14} className="text-zinc-400 group-hover:text-green-600 transition-colors shrink-0" />
+        <span className="text-[10px] font-mono font-medium truncate flex-1 text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-300">
+          Pesquisar portal...
+        </span>
+        <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[8px] font-mono font-bold text-zinc-400 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded shadow-2xs">
+          ⌘K
+        </kbd>
       </div>
+
+      {/* Header Search Icon Button (Mobile) */}
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => setIsOpen(true)}
+        className="flex md:hidden p-2 text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all rounded-lg"
+        title="Abrir Busca Global"
+        id="global-header-search-mobile-btn"
+      >
+        <Search size={18} />
+      </motion.button>
 
       {/* Global Search Dialog Modal */}
       <AnimatePresence>
@@ -486,46 +351,18 @@ export const GlobalHeaderSearch: React.FC<GlobalHeaderSearchProps> = ({
                     setSelectedIndex(-1);
                   }}
                   onKeyDown={handleKeyDownInput}
-                  placeholder={t('header.search_placeholder', { defaultValue: 'Pesquisar artigos, produtos, marcas ou categorias...' })}
+                  placeholder="Pesquisar artigos, produtos, marcas ou categorias..."
                   className="flex-1 bg-transparent text-sm font-medium text-black dark:text-white placeholder-zinc-400 focus:outline-none"
                   id="global-search-input"
                 />
-
-                {/* Microphone Toggle Button inside Search Modal Header */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (voiceSearch.isListening) {
-                      voiceSearch.stopListening();
-                    } else {
-                      voiceSearch.startListening();
-                    }
-                  }}
-                  className={`p-1.5 transition-all rounded flex items-center gap-1.5 ${
-                    voiceSearch.isListening
-                      ? 'bg-red-500 text-white shadow-xs animate-pulse'
-                      : 'text-zinc-400 hover:text-red-500 hover:bg-red-500/10'
-                  }`}
-                  title={voiceSearch.isListening ? t('voice.stop', { defaultValue: 'Parar escuta' }) : t('voice.start', { defaultValue: 'Pesquisar por voz' })}
-                  id="global-search-modal-mic-toggle"
-                >
-                  <Mic size={16} />
-                  {voiceSearch.isListening && (
-                    <span className="text-[10px] font-mono font-bold uppercase hidden sm:inline">
-                      {Math.round(voiceSearch.amplitude * 100)}%
-                    </span>
-                  )}
-                </button>
-
                 {query && (
                   <button
                     onClick={() => {
                       setQuery('');
-                      voiceSearch.resetTranscript();
                       inputRef.current?.focus();
                     }}
                     className="p-1 text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
-                    title={t('header.clear', { defaultValue: 'Limpar busca' })}
+                    title="Limpar busca"
                   >
                     <X size={14} />
                   </button>
@@ -539,140 +376,13 @@ export const GlobalHeaderSearch: React.FC<GlobalHeaderSearchProps> = ({
                 </button>
               </div>
 
-              {/* Live Microphone Amplitude & Speech Recognition Visualizer Panel (Inside Modal) */}
-              <AnimatePresence>
-                {voiceSearch.isListening && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="bg-red-500/10 dark:bg-red-950/30 border-b border-red-500/30 px-4 py-3 overflow-hidden"
-                  >
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                      {/* Left: Dynamic Expanding Acoustic Ring + Status & Transcript */}
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <div className="shrink-0">
-                          <VoiceExpandingRing
-                            size="md"
-                            amplitude={voiceSearch.amplitude}
-                            isListening={voiceSearch.isListening}
-                            showIcon={true}
-                          />
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-[11px] font-mono font-black text-red-600 dark:text-red-400 uppercase tracking-widest">
-                              {t('voice.listening', { defaultValue: 'Microfone Ativo • Ouvindo sua voz' })}
-                            </span>
-                            <span className="text-[10px] font-mono font-bold text-zinc-600 dark:text-zinc-300 bg-white/70 dark:bg-zinc-900/70 px-1.5 py-0.5 rounded border border-zinc-200 dark:border-zinc-800">
-                              {t('voice.amplitude', { defaultValue: 'Amplitude' })}: {Math.round(voiceSearch.amplitude * 100)}%
-                            </span>
-                          </div>
-
-                          <div className="text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate">
-                            {voiceSearch.transcript ? (
-                              <span>
-                                <span className="text-zinc-400 font-mono text-[10px] uppercase mr-1.5">Detectado:</span>
-                                <span className="font-bold text-black dark:text-white underline decoration-red-500 decoration-2">
-                                  "{voiceSearch.transcript}"
-                                </span>
-                              </span>
-                            ) : (
-                              <span className="text-zinc-400 italic">
-                                {t('voice.speak_hint', { defaultValue: 'Fale agora: nome do produto, técnica, marca ou categoria...' })}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Right: 16-band Spectrum Equalizer Visualizer & Controls */}
-                      <div className="flex flex-col items-end gap-1.5 shrink-0 w-full sm:w-auto">
-                        <div 
-                          className="flex items-end gap-1 h-7 px-2.5 py-1 bg-black/10 dark:bg-white/5 rounded border border-red-500/20"
-                          title={`${t('voice.amplitude', { defaultValue: 'Amplitude da voz' })}: ${Math.round(voiceSearch.amplitude * 100)}%`}
-                        >
-                          {voiceSearch.detailedBands.map((band, i) => {
-                            const h = Math.max(3, Math.min(22, Math.round(band * 22)));
-                            const color = band > 0.75 ? '#ef4444' : band > 0.45 ? '#f59e0b' : '#22c55e';
-                            return (
-                              <span
-                                key={i}
-                                className="w-1 rounded-xs transition-all duration-75"
-                                style={{
-                                  height: `${h}px`,
-                                  backgroundColor: color,
-                                  boxShadow: band > 0.6 ? `0 0 5px ${color}` : 'none'
-                                }}
-                              />
-                            );
-                          })}
-                        </div>
-
-                        {/* Action buttons */}
-                        <div className="flex items-center gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (voiceSearch.transcript.trim()) {
-                                handleSearchSubmit(voiceSearch.transcript.trim());
-                              }
-                              voiceSearch.stopListening();
-                            }}
-                            className="px-2.5 py-1 text-[10px] font-mono font-bold bg-green-600 hover:bg-green-700 text-white rounded-xs uppercase tracking-wider flex items-center gap-1 transition-colors"
-                          >
-                            <Check size={12} />
-                            {t('voice.search_action', { defaultValue: 'Buscar' })}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => voiceSearch.stopListening()}
-                            className="px-2 py-1 text-[10px] font-mono font-bold bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 rounded-xs uppercase tracking-wider flex items-center gap-1 transition-colors"
-                          >
-                            <MicOff size={12} />
-                            {t('voice.stop_action', { defaultValue: 'Parar' })}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Dynamic Real-Time Full-Width SVG Waveform (Scales crests to voice amplitude) */}
-                    <div className="mt-2.5 pt-2 border-t border-red-500/20">
-                      <div className="flex items-center justify-between text-[9px] font-mono text-zinc-500 dark:text-zinc-400 mb-1">
-                        <span className="uppercase tracking-wider flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block animate-ping" />
-                          Onda Acústica Dinâmica
-                        </span>
-                        <span>Escala Vocal: {Math.round(voiceSearch.amplitude * 100)}%</span>
-                      </div>
-                      <DynamicWaveform
-                        amplitude={voiceSearch.amplitude}
-                        height={30}
-                      />
-                    </div>
-
-                    {/* Voice Amplitude Linear Bar Gauge */}
-                    <div className="mt-2 w-full bg-zinc-200 dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full transition-all duration-75 rounded-full"
-                        style={{
-                          width: `${Math.max(4, Math.min(100, voiceSearch.amplitude * 100))}%`,
-                          backgroundColor: voiceSearch.amplitude > 0.75 ? '#ef4444' : voiceSearch.amplitude > 0.45 ? '#f59e0b' : '#22c55e'
-                        }}
-                      />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
               {/* Category Filter Tabs */}
               <div className="flex items-center gap-1 px-4 py-2 border-b border-zinc-100 dark:border-zinc-900 bg-zinc-100/30 dark:bg-zinc-900/30 overflow-x-auto no-scrollbar">
                 {[
-                  { id: 'all', label: t('categories.All', { defaultValue: 'Todos' }), count: searchResults.total },
-                  { id: 'products', label: `🛒 ${t('nav.shop', { defaultValue: 'Produtos' })}`, count: searchResults.products.length },
-                  { id: 'articles', label: `📰 ${t('nav.blog', { defaultValue: 'Artigos' })}`, count: searchResults.articles.length },
-                  { id: 'categories', label: `🏷️ ${t('nav.categories', { defaultValue: 'Categorias' })}`, count: searchResults.categories.length },
+                  { id: 'all', label: 'Todos', count: searchResults.total },
+                  { id: 'products', label: '🛒 Produtos', count: searchResults.products.length },
+                  { id: 'articles', label: '📰 Artigos', count: searchResults.articles.length },
+                  { id: 'categories', label: '🏷️ Categorias', count: searchResults.categories.length },
                 ].map(tab => (
                   <button
                     key={tab.id}
@@ -702,13 +412,13 @@ export const GlobalHeaderSearch: React.FC<GlobalHeaderSearchProps> = ({
                         <div className="flex items-center justify-between mb-2.5">
                           <span className="flex items-center gap-1.5 text-[9px] font-mono font-black uppercase tracking-widest text-zinc-400">
                             <History size={12} className="text-zinc-500" />
-                            {t('header.recent_searches', { defaultValue: 'Buscas Recentes' })}
+                            Buscas Recentes
                           </span>
                           <button
                             onClick={clearRecentSearches}
                             className="text-[9px] font-mono text-zinc-400 hover:text-red-500 transition-colors uppercase tracking-wider"
                           >
-                            {t('header.clear', { defaultValue: 'Limpar' })}
+                            Limpar
                           </button>
                         </div>
                         <div className="flex flex-wrap gap-2">
@@ -733,7 +443,7 @@ export const GlobalHeaderSearch: React.FC<GlobalHeaderSearchProps> = ({
                     <div>
                       <span className="flex items-center gap-1.5 text-[9px] font-mono font-black uppercase tracking-widest text-zinc-400 mb-2.5">
                         <Flame size={12} className="text-yellow-500" />
-                        {t('header.popular_suggestions', { defaultValue: 'Termos Populares & Sugestões' })}
+                        Termos Populares & Sugestões
                       </span>
                       <div className="flex flex-wrap gap-2">
                         {POPULAR_SEARCH_SUGGESTIONS.map((sug, idx) => (

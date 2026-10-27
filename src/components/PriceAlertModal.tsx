@@ -133,23 +133,6 @@ export const PriceAlertModal: React.FC<PriceAlertModalProps> = ({
         onSaveAlert(product.id, targetPrice, channels, emailAddress);
       }
 
-      // 4. If category subscription requested, activate in category subscriptions
-      if (subscribeToCategory && product.category) {
-        try {
-          const catSubs = JSON.parse(localStorage.getItem('oss_category_offer_subscriptions') || '{}');
-          const catKey = `cat-${product.category.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
-          catSubs[catKey] = {
-            active: true,
-            channelEmail: channelEmail,
-            channelApp: channelApp,
-            triggerPriceDrop: true,
-            triggerNewDeal: triggerOnDeals,
-            minDiscountPct: 15
-          };
-          localStorage.setItem('oss_category_offer_subscriptions', JSON.stringify(catSubs));
-        } catch (e) {}
-      }
-
       onClose();
     } catch (error) {
       console.error("Erro ao salvar alerta de preço:", error);
@@ -177,47 +160,16 @@ export const PriceAlertModal: React.FC<PriceAlertModalProps> = ({
     }
   };
 
-  const [subscribeToCategory, setSubscribeToCategory] = useState<boolean>(false);
-  const [triggerOnDeals, setTriggerOnDeals] = useState<boolean>(true);
-
-  const handleSimulateDrop = async () => {
+  const handleSimulateDrop = () => {
     const dropPrice = Math.max(10, Math.round(targetPrice - 15));
     const savings = Math.round(product.price - dropPrice);
-    const discountPct = Math.round((savings / product.price) * 100);
-
-    // Call backend endpoint to trigger real offer alert + email
-    try {
-      await fetch('/api/notifications/offer-alert', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          targetType: 'product',
-          targetName: product.title,
-          eventType: 'price_drop',
-          email: channelEmail ? (emailAddress || auth.currentUser?.email || 'gustavorotatori@gmail.com') : undefined,
-          product: {
-            id: product.id,
-            title: product.title,
-            brand: product.brand,
-            price: dropPrice,
-            originalPrice: product.price,
-            imageUrl: product.imageUrl,
-            category: product.category,
-            platform: product.platform,
-            affiliateUrl: product.affiliateUrl
-          }
-        })
-      });
-    } catch (e) {
-      console.warn("API offer-alert error:", e);
-    }
 
     // 1. Fire Web Push API Notification if allowed
     if (channelPush && typeof window !== 'undefined' && 'Notification' in window) {
       if (Notification.permission === 'granted') {
         try {
           new Notification("⚡ OSS.OS - ALERTA DE PREÇO DISPARADO!", {
-            body: `🔥 O equipamento "${product.title}" (${product.brand}) caiu para R$ ${dropPrice.toFixed(2)} (-${discountPct}%)! Economia de R$ ${savings.toFixed(2)}.`,
+            body: `🔥 O equipamento "${product.title}" (${product.brand}) caiu para R$ ${dropPrice.toFixed(2)}! Economia de R$ ${savings.toFixed(2)}.`,
             icon: product.imageUrl || '/apple-touch-icon.png'
           });
         } catch (e) {
@@ -230,7 +182,7 @@ export const PriceAlertModal: React.FC<PriceAlertModalProps> = ({
     setSimulationResult({
       triggered: true,
       simulatedPrice: dropPrice,
-      message: `⚡ ALERTA DISPARADO! Queda simulada para R$ ${dropPrice.toFixed(2)} (-${discountPct}%). In-App e e-mail despachados.`,
+      message: `⚡ SIMULAÇÃO DISPARADA COM SUCESSO! Preço simulado de R$ ${dropPrice.toFixed(2)} atingiu a meta de R$ ${targetPrice.toFixed(2)}.`,
       emailSimulated: channelEmail
     });
   };
@@ -470,51 +422,6 @@ export const PriceAlertModal: React.FC<PriceAlertModalProps> = ({
                       className="w-4 h-4 accent-yellow-600 cursor-pointer"
                     />
                   </div>
-                </div>
-              </div>
-
-              {/* Offer Subscription Scope & Triggers */}
-              <div className="space-y-2.5 bg-zinc-900/30 p-4 border border-zinc-850">
-                <span className="text-[10px] font-black uppercase tracking-wider text-zinc-200 block">
-                  ESCOPO DA INSCRIÇÃO & GATILHOS DE OFERTA
-                </span>
-
-                <div className="space-y-2 text-xs">
-                  {/* Category subscription checkbox */}
-                  <label className="flex items-start gap-2.5 p-2 bg-black border border-zinc-850 cursor-pointer hover:border-zinc-700 transition-colors">
-                    <input
-                      type="checkbox"
-                      checked={subscribeToCategory}
-                      onChange={(e) => setSubscribeToCategory(e.target.checked)}
-                      className="w-4 h-4 accent-amber-500 mt-0.5"
-                    />
-                    <div>
-                      <span className="text-[10px] font-bold text-white block uppercase">
-                        Receber também ofertas de toda a categoria {product.category}
-                      </span>
-                      <span className="text-[8px] text-zinc-400 block">
-                        Avisa quando novos kimonos, rashguards ou faixas desta categoria entrarem em liquidação.
-                      </span>
-                    </div>
-                  </label>
-
-                  {/* New deals / coupons checkbox */}
-                  <label className="flex items-start gap-2.5 p-2 bg-black border border-zinc-850 cursor-pointer hover:border-zinc-700 transition-colors">
-                    <input
-                      type="checkbox"
-                      checked={triggerOnDeals}
-                      onChange={(e) => setTriggerOnDeals(e.target.checked)}
-                      className="w-4 h-4 accent-green-500 mt-0.5"
-                    />
-                    <div>
-                      <span className="text-[10px] font-bold text-white block uppercase">
-                        Alertar quando novos cupons e promoções relâmpago surgirem
-                      </span>
-                      <span className="text-[8px] text-zinc-400 block">
-                        Compara preços multiloja e envia cupom com menor valor verificado.
-                      </span>
-                    </div>
-                  </label>
                 </div>
               </div>
 

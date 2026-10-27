@@ -101,43 +101,10 @@ export interface InAppPriceAlertNotification {
   discountPct?: number;
   savings: number;
   platform: string;
-  type: 'target_met' | 'promo_drop' | 'flash_deal' | 'new_deal' | 'category_deal' | 'deal_available';
-  category?: string;
+  type: 'target_met' | 'promo_drop' | 'flash_deal';
   createdAt: string;
   isRead: boolean;
   channelsNotified?: ('push' | 'email' | 'app')[];
-  dealDetails?: {
-    storeName?: string;
-    couponCode?: string;
-    link?: string;
-    description?: string;
-  };
-  emailSent?: boolean;
-  emailRecipient?: string;
-  emailHtmlPreview?: string;
-}
-
-export interface OfferSubscription {
-  id: string;
-  targetType: 'product' | 'category';
-  targetId: string;
-  targetName: string;
-  targetImage?: string;
-  category?: string;
-  channels: {
-    email: boolean;
-    inApp: boolean;
-    push?: boolean;
-  };
-  email?: string;
-  triggerOnPriceDrop: boolean;
-  triggerOnNewDeal: boolean;
-  discountThresholdPct?: number;
-  targetPrice?: number;
-  active: boolean;
-  createdAt: string;
-  updatedAt?: string;
-  lastNotifiedAt?: string;
 }
 
 export interface Review {

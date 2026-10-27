@@ -611,8 +611,8 @@ export const PriceComparator: React.FC<PriceComparatorProps> = ({ offers, produc
           </div>
         </div>
 
-        <div className="overflow-x-auto border border-zinc-100 dark:border-zinc-800">
-          <table className="w-full text-left border-collapse min-w-[280px]">
+        <div className="overflow-hidden border border-zinc-100 dark:border-zinc-800">
+          <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800">
                 <th className="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-zinc-500">{currentDict.store}</th>
@@ -1331,8 +1331,8 @@ export const PriceComparator: React.FC<PriceComparatorProps> = ({ offers, produc
                     </div>
                   </div>
 
-                  <div className="overflow-x-auto border border-zinc-100 dark:border-zinc-800">
-                    <table className="w-full text-left border-collapse min-w-[280px]">
+                  <div className="overflow-hidden border border-zinc-100 dark:border-zinc-800">
+                    <table className="w-full text-left border-collapse">
                       <thead>
                         <tr className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800">
                           <th className="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-zinc-500">{currentDict.store}</th>

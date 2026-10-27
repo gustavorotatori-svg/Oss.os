@@ -84,15 +84,15 @@ export const FilterDrawer: React.FC<FilterDrawerProps> = ({
   // Accessibility check for reduced motion
   const prefersReducedMotion = useReducedMotion();
 
-  // Accordion section collapse state: top 5 primary filters expanded by default
+  // Accordion section collapse state
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     category: true,
-    brand: true,
     price: true,
-    level: true,
     rating: true,
-    popularity: false,
-    platform: false,
+    popularity: true,
+    platform: true,
+    brand: true,
+    level: false,
     productType: false,
     belts: false,
     sizes: false,
