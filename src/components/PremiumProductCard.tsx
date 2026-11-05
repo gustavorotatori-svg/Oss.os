@@ -3,10 +3,11 @@ import { PriceAlertModal } from "./PriceAlertModal";
 import { PurchaseSchedulerModal } from "./PurchaseSchedulerModal";
 import { SocialShareModal } from "./SocialShareModal";
 import { SocialImpactBadge } from "./SocialImpactBadge";
+import { BrandSizeChartModal } from "./BrandSizeChartModal";
 import { OSSSeloStamp, WeaveGSMGauge } from "./BJJBrandElements";
 import React from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'motion/react';
-import { ShoppingCart, Search, ExternalLink, ChevronRight, Star, Bell, BellOff, TrendingDown, Wand2, Loader2, ArrowUp, ArrowDown, Plus, Minus, Trash2, Check, TrendingUp, Gift, X, Heart, RefreshCw, Zap, Scale, CalendarDays, Clock, BellRing, Share2, Flame } from 'lucide-react';
+import { ShoppingCart, Search, ExternalLink, ChevronRight, Star, Bell, BellOff, TrendingDown, Wand2, Loader2, ArrowUp, ArrowDown, Plus, Minus, Trash2, Check, TrendingUp, Gift, X, Heart, RefreshCw, Zap, Scale, CalendarDays, Clock, BellRing, Share2, Flame, Ruler } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Product, ProductOffer } from '../types';
 import { generateProductSchema } from '../lib/schemaOrg';
@@ -24,6 +25,7 @@ import BJJImage from './BJJImage';
 import { OssLogo } from '@/components/Logo';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, ReferenceLine, Tooltip as RechartsTooltip } from 'recharts';
+import { getCurrencyCode, getCurrencySymbol, formatPrice } from '@/src/lib/currency';
 
 interface PremiumProductCardProps {
   product: Product;
@@ -116,6 +118,7 @@ const PremiumProductCard: React.FC<PremiumProductCardProps> = ({
   const [isPriceAlertModalOpen, setIsPriceAlertModalOpen] = React.useState(false);
   const [isSchedulerModalOpen, setIsSchedulerModalOpen] = React.useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = React.useState(false);
+  const [isSizeChartModalOpen, setIsSizeChartModalOpen] = React.useState(false);
   const [selectedOfferToShare, setSelectedOfferToShare] = React.useState<ProductOffer | null>(null);
 
   const handleOpenShare = (offer?: ProductOffer) => {
@@ -821,6 +824,17 @@ const PremiumProductCard: React.FC<PremiumProductCardProps> = ({
                 {t('product.view_details')}
               </motion.button>
 
+              <motion.button 
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setIsSizeChartModalOpen(true)}
+                className="w-full bg-zinc-900/95 hover:bg-black text-white font-mono font-black uppercase text-[10px] tracking-[0.2em] py-2.5 rounded-none flex items-center justify-center gap-2 transition-colors border border-zinc-700 cursor-pointer shadow-md"
+                id={`btn-overlay-sizechart-${product.id}`}
+              >
+                <Ruler size={13} className="text-green-500 stroke-[2.5px]" />
+                Tabela de Medidas
+              </motion.button>
+
               <motion.a 
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -961,8 +975,45 @@ const PremiumProductCard: React.FC<PremiumProductCardProps> = ({
            <SocialImpactBadge 
              price={product.price} 
              variant="card-bar" 
-             className="mb-6" 
+             className="mb-4" 
            />
+
+           {/* Prominent Tabela de Medidas Button specifically for the product brand */}
+           <motion.button
+             type="button"
+             whileHover={{ scale: 1.01 }}
+             whileTap={{ scale: 0.99 }}
+             onClick={(e) => {
+               e.stopPropagation();
+               setIsSizeChartModalOpen(true);
+             }}
+             className="w-full flex items-center justify-between px-3.5 py-2.5 mb-5 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-900/60 dark:hover:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 hover:border-green-600 dark:hover:border-green-500 transition-all cursor-pointer group/sizechart rounded-none shadow-xs"
+             title={`Abrir Tabela de Medidas oficial para ${product.brand || 'Kimonos'}`}
+             id={`btn-size-chart-${product.id}`}
+           >
+             <div className="flex items-center gap-2.5">
+               <div className="w-6 h-6 bg-green-600/10 dark:bg-green-500/10 border border-green-600/30 text-green-600 dark:text-green-400 flex items-center justify-center shrink-0">
+                 <Ruler size={13} className="stroke-[2.5]" />
+               </div>
+               <div className="text-left">
+                 <div className="flex items-center gap-1.5">
+                   <span className="text-[10px] font-mono font-black uppercase tracking-wider text-black dark:text-white group-hover/sizechart:text-green-600 dark:group-hover/sizechart:text-green-400 transition-colors">
+                     Tabela de Medidas
+                   </span>
+                   <span className="text-[7.5px] font-mono font-black px-1.5 py-0.2 bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20 uppercase">
+                     {product.brand}
+                   </span>
+                 </div>
+                 <span className="text-[7.5px] font-mono text-zinc-400 dark:text-zinc-500 block">
+                   Guia de tamanhos, corte & encolhimento
+                 </span>
+               </div>
+             </div>
+             <div className="flex items-center gap-1 text-[8.5px] font-mono font-bold text-green-600 dark:text-green-400 uppercase shrink-0">
+               <span>Ver Tabela</span>
+               <ChevronRight size={12} className="group-hover/sizechart:translate-x-0.5 transition-transform" />
+             </div>
+           </motion.button>
 
            {/* Technical Details Toggle */}
            <button 
@@ -1043,7 +1094,21 @@ const PremiumProductCard: React.FC<PremiumProductCardProps> = ({
 
                     {Array.isArray(product.size) && product.size.length > 0 && (
                       <div className="pt-2 border-t border-zinc-250 dark:border-zinc-800">
-                        <span className="block text-[7px] font-mono font-black text-zinc-400 uppercase mb-2">TAMANHOS DISPONÍVEIS</span>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="block text-[7px] font-mono font-black text-zinc-400 uppercase">TAMANHOS DISPONÍVEIS</span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsSizeChartModalOpen(true);
+                            }}
+                            className="text-[8px] font-mono font-bold text-green-600 dark:text-green-400 hover:underline flex items-center gap-1 cursor-pointer bg-transparent border-0 p-0"
+                            title={`Ver tabela de medidas da marca ${product.brand}`}
+                          >
+                            <Ruler size={10} />
+                            <span>Tabela de Medidas ({product.brand})</span>
+                          </button>
+                        </div>
                         <div className="flex flex-wrap gap-1.5">
                           {product.size.map(s => (
                             <span key={s} className="px-2 py-0.5 bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 text-[8px] font-mono font-black group-hover:border-[#cc0000] transition-colors rounded-none">
@@ -1817,7 +1882,7 @@ const PremiumProductCard: React.FC<PremiumProductCardProps> = ({
                 )}
               </div>
               <div className="flex items-baseline gap-1.5 flex-wrap">
-                 <span className="font-mono text-[10px] text-zinc-500">{i18n.language === 'en' ? 'USD' : 'BRL'}</span>
+                 <span className="font-mono text-[10px] text-zinc-500">{getCurrencyCode(i18n.language)}</span>
                  {(() => {
                    const effectivePrice = (cardOffersList[0]?.price && cardOffersList[0].price < product.price) 
                      ? cardOffersList[0].price 
@@ -1832,7 +1897,7 @@ const PremiumProductCard: React.FC<PremiumProductCardProps> = ({
                          transition={{ type: "spring", stiffness: 450, damping: 20 }}
                          className="text-2xl font-black tracking-tighter text-black dark:text-white inline-flex items-center gap-2"
                        >
-                         {effectivePrice.toLocaleString(i18n.language === 'en' ? 'en-US' : 'pt-BR', { minimumFractionDigits: 2 })}
+                         {formatPrice(effectivePrice, i18n.language)}
                          {isRecent && mainPriceUpdate.isPositive && (
                            <motion.span
                              initial={{ opacity: 0, scale: 0.6 }}
@@ -2094,6 +2159,15 @@ const PremiumProductCard: React.FC<PremiumProductCardProps> = ({
           onClose={() => setIsShareModalOpen(false)}
           product={product}
           selectedOffer={selectedOfferToShare}
+        />
+        <BrandSizeChartModal
+          isOpen={isSizeChartModalOpen}
+          onClose={() => setIsSizeChartModalOpen(false)}
+          brand={product.brand}
+          productTitle={product.title}
+          category={product.category}
+          gender={product.gender}
+          availableSizes={product.size}
         />
      </motion.div>
 

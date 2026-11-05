@@ -295,3 +295,41 @@ export async function scheduleRealFCMReminder(schedule: {
     return { success: false, error: error?.message || String(error) };
   }
 }
+
+/**
+ * Dispatches a training reminder push notification via FCM server and Service Worker.
+ */
+export async function dispatchTrainingReminderPush(params: {
+  time: string;
+  modality: string;
+  customMessage?: string;
+  advanceMinutes?: number;
+  token?: string;
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    const advanceText = !params.advanceMinutes || params.advanceMinutes === 0
+      ? 'O tatame está pronto agora!'
+      : `Seu treino começa em ${params.advanceMinutes} minutos (${params.time}h).`;
+
+    const title = `🥋 OSS.OS - Lembrete de Treino (${params.modality.toUpperCase()})`;
+    const body = params.customMessage 
+      ? `${params.customMessage} • ${advanceText}` 
+      : `Hora de preparar o kimono e hidratar-se! ${advanceText}`;
+
+    return await sendRealFCMPush({
+      token: params.token,
+      title,
+      body,
+      imageUrl: '/apple-touch-icon.png',
+      data: {
+        url: '/?view=SETTINGS',
+        type: 'training_reminder',
+        modality: params.modality,
+        time: params.time
+      }
+    });
+  } catch (err: any) {
+    console.warn('[FCM] Erro ao despachar lembrete de treino:', err);
+    return { success: false, error: err?.message || String(err) };
+  }
+}

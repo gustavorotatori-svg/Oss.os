@@ -4445,6 +4445,37 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                           <ChevronRight size={16} />
                         </div>
                       </button>
+
+                      <button 
+                        onClick={() => {
+                          setActiveTab('notificacoes');
+                          playClickSound();
+                          setTimeout(() => {
+                            document.getElementById('settings-training-reminders')?.scrollIntoView({ behavior: 'smooth' });
+                          }, 150);
+                        }}
+                        className="group p-5 text-left border-2 border-green-600/30 hover:border-green-600 bg-green-500/5 hover:bg-black hover:text-white transition-all flex items-center justify-between cursor-pointer md:col-span-2"
+                        id="btn-shortcut-training-reminders"
+                      >
+                        <div className="flex items-center gap-3.5">
+                          <div className="p-3 bg-green-600 text-white rounded-none">
+                            <Clock size={20} className="animate-pulse" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="block text-[11px] font-black uppercase tracking-widest">Lembretes de Treino Diários</span>
+                              <span className="text-[7.5px] font-mono font-bold uppercase bg-green-600 text-white px-1.5 py-0.2">Push Automático</span>
+                            </div>
+                            <span className="block text-[9px] opacity-70 uppercase tracking-tight mt-0.5">
+                              Defina seus horários de treino na semana para ser notificado pelo serviço de Push Notifications
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <span className="text-[9px] font-mono font-black uppercase text-green-600 group-hover:text-white">Definir Horários →</span>
+                          <ChevronRight size={16} />
+                        </div>
+                      </button>
                     </div>
                   </section>
                 </motion.div>

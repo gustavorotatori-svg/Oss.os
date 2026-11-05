@@ -129,6 +129,7 @@ const PriceHistoryChart = lazy(() => import('./components/PriceHistoryChart'));
 const ProductComparisonModal = lazy(() => import('./components/ProductComparisonModal'));
 const CatalogSeoAnalyzerModal = lazy(() => import('./components/CatalogSeoAnalyzerModal').then(m => ({ default: m.CatalogSeoAnalyzerModal })));
 import { ProductReviewModal } from './components/ProductReviewModal';
+import CommunityReviewsHub from './components/CommunityReviewsHub';
 import { FloatingCompareBar } from './components/FloatingCompareBar';
 import { DealHighlightBanner } from './components/DealHighlightBanner';
 import { ToastContainer } from './components/ToastContainer';
@@ -474,7 +475,7 @@ const HeroParticles = () => {
 
 const categories: Category[] = ['Kimonos', 'Rashguards', 'Bermudas', 'Faixas', 'Protetores', 'Acessórios', 'Equipamentos de Proteção', 'Serviços', 'Suplementos'];
 
-type View = 'LANDING' | 'SHOP' | 'WISHLIST' | 'CONTACT' | 'SETTINGS' | 'DASHBOARD' | 'ABOUT' | 'TRANSPARENCY' | 'COMPARATOR';
+type View = 'LANDING' | 'SHOP' | 'WISHLIST' | 'CONTACT' | 'SETTINGS' | 'DASHBOARD' | 'ABOUT' | 'TRANSPARENCY' | 'COMPARATOR' | 'REVIEWS';
 
 const bjjLegendsHall = '/images/bjj_legends_hall_1779888797302.png';
 
@@ -1389,7 +1390,7 @@ export default function App() {
   useEffect(() => {
     // Map path to View
     const path = location.pathname.substring(1).toUpperCase() || 'LANDING';
-    const validViews: View[] = ['LANDING', 'SHOP', 'WISHLIST', 'CONTACT', 'SETTINGS', 'DASHBOARD', 'ABOUT', 'TRANSPARENCY', 'COMPARATOR'];
+    const validViews: View[] = ['LANDING', 'SHOP', 'WISHLIST', 'CONTACT', 'SETTINGS', 'DASHBOARD', 'ABOUT', 'TRANSPARENCY', 'COMPARATOR', 'REVIEWS'];
     
     if (validViews.includes(path as View)) {
       setView(path as View);
@@ -7190,9 +7191,11 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
               <div className="flex flex-col items-center gap-1.5">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button 
+                    <motion.button 
+                      whileHover={{ scale: 1.15 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={() => handleNavigate('SETTINGS')}
-                      className="relative focus:outline-none"
+                      className="relative focus:outline-none cursor-pointer"
                     >
                       {user.photoURL ? (
                         <img src={user.photoURL} alt={user.displayName} className="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-800" />
@@ -7201,7 +7204,7 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
                           <User size={14} className="text-zinc-400" />
                         </div>
                       )}
-                    </button>
+                    </motion.button>
                   </TooltipTrigger>
                   <TooltipContent side="right" className="bg-black text-white border-zinc-800 rounded-none px-3 py-1.5 text-[10px] font-black uppercase tracking-widest z-[100]">
                     <div className="flex flex-col text-left">
@@ -7213,12 +7216,14 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
 
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button 
+                    <motion.button 
+                      whileHover={{ scale: 1.2, rotate: 15 }}
+                      whileTap={{ scale: 0.9 }}
                       onClick={enterAthleteFocusMode}
-                      className="w-7 h-7 rounded-none bg-green-600 hover:bg-green-500 text-white flex items-center justify-center border-none transition-all shadow-md mt-1 animate-pulse"
+                      className="w-7 h-7 rounded-none bg-green-600 hover:bg-green-500 text-white flex items-center justify-center border-none transition-all shadow-md mt-1 animate-pulse cursor-pointer"
                     >
                       <Zap size={11} fill="currentColor" />
-                    </button>
+                    </motion.button>
                   </TooltipTrigger>
                   <TooltipContent side="right" className="bg-black text-white border-zinc-850 rounded-none px-3 py-1.5 text-[10px] font-black uppercase tracking-widest z-[100]">
                     Ativar Modo Foco
@@ -7284,6 +7289,7 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
             { label: t('nav.home'), value: 'LANDING', icon: Home, keywords: 'início home tatame landing' },
             { label: t('nav.shop'), value: 'SHOP', icon: ShoppingCart, keywords: 'loja produtos kimonos faixas compras vitrine' },
             { label: t('landing.compare_prices', { defaultValue: 'Comparar Preços' }), value: 'COMPARATOR', icon: Scale, isNew: true, keywords: 'preços comparar multiloja cotação economia' },
+            { label: 'Avaliações & Reviews', value: 'REVIEWS', icon: Star, isNew: true, keywords: 'avaliações reviews notas comentários opiniões úteis relatos tatame produtos serviços' },
             { label: t('nav.blog', { defaultValue: 'Notícias' }), value: 'BLOG', icon: Newspaper, isNew: true, keywords: 'blog notícias artigos posts novidades técnicas' },
             { label: t('nav.podcast', { defaultValue: 'Podcast' }), value: 'PODCAST', icon: Mic, isNew: true, keywords: 'podcast episódios áudio bate-papo entrevistas' },
             { label: t('nav.wishlist'), value: 'WISHLIST', icon: Heart, count: wishlist.size, keywords: 'favoritos desejos lista salvos' },
@@ -7460,10 +7466,13 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
                     const Icon = item.icon;
                     const isActive = view === item.value;
                     const buttonContent = (
-                      <button
+                      <motion.button
                         key={item.value}
+                        initial="initial"
+                        whileHover="hover"
+                        whileTap="tap"
                         onClick={() => handleNavigate(item.value as View)}
-                        className={`w-full flex items-center ${isSidebarCollapsed ? 'justify-center p-3' : 'justify-between p-3'} transition-all duration-200 transform hover:scale-105 origin-center rounded-none border-b border-zinc-50/50 dark:border-zinc-900/50 last:border-b-0 cursor-pointer relative z-0 hover:z-10 ${
+                        className={`w-full flex items-center ${isSidebarCollapsed ? 'justify-center p-3' : 'justify-between p-3'} transition-all duration-200 transform hover:scale-[1.02] origin-center rounded-none border-b border-zinc-50/50 dark:border-zinc-900/50 last:border-b-0 cursor-pointer relative z-0 hover:z-10 group ${
                           isActive 
                             ? 'active-nav-item bg-black text-white dark:bg-white dark:text-black border-l-4 border-l-green-600 dark:border-l-green-500 shadow-[inset_0_0_12px_rgba(34,197,94,0.18),0_2px_8px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_0_14px_rgba(34,197,94,0.22),0_2px_10px_rgba(0,0,0,0.25)] font-black' 
                             : 'border-l-4 border-l-transparent text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900/30 hover:text-black dark:hover:text-white'
@@ -7475,7 +7484,36 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
                           <span className="absolute left-0 top-0 bottom-0 w-[3px] bg-green-500 shadow-[0_0_10px_#22c55e]" />
                         )}
                         <div className={`flex items-center ${isSidebarCollapsed ? 'justify-center' : 'gap-3'}`}>
-                          <Icon size={16} className={isActive ? 'text-green-500 dark:text-green-600' : 'text-zinc-400'} />
+                          <motion.div
+                            variants={{
+                              initial: { scale: 1, rotate: 0, y: 0 },
+                              hover: { 
+                                scale: 1.25, 
+                                rotate: [0, -12, 12, -4, 0], 
+                                y: -2,
+                                transition: {
+                                  duration: 0.35,
+                                  type: 'spring',
+                                  stiffness: 350,
+                                  damping: 15
+                                }
+                              },
+                              tap: { scale: 0.9 }
+                            }}
+                            whileHover={{
+                              scale: 1.35,
+                              rotate: [0, -15, 15, -6, 0],
+                              y: -3,
+                              transition: { duration: 0.3 }
+                            }}
+                            className={`p-1 rounded-sm transition-colors flex items-center justify-center shrink-0 ${
+                              isActive 
+                                ? 'text-green-500 dark:text-green-600 bg-green-500/10' 
+                                : 'text-zinc-400 group-hover:text-green-600 group-hover:bg-green-500/10'
+                            }`}
+                          >
+                            <Icon size={16} />
+                          </motion.div>
                           {!isSidebarCollapsed && (
                             <span className="text-[9px] font-black uppercase tracking-wider">{item.label}</span>
                           )}
@@ -7508,7 +7546,7 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
                         {isSidebarCollapsed && item.count !== undefined && item.count > 0 && (
                           <span className="absolute top-1 right-1 w-2 h-2 bg-red-650 rounded-full border border-white dark:border-zinc-950"></span>
                         )}
-                      </button>
+                      </motion.button>
                     );
 
                     if (isSidebarCollapsed) {
@@ -7683,6 +7721,7 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
                   { id: 'LANDING', label: 'Tatame (Início)', icon: <Home size={15} /> },
                   { id: 'SHOP', label: 'Catálogo & Loja', icon: <ShoppingBag size={15} /> },
                   { id: 'COMPARATOR', label: 'Comparador de Preços', icon: <Scale size={15} /> },
+                  { id: 'REVIEWS', label: 'Avaliações & Reviews', icon: <Star size={15} className="text-amber-400" /> },
                   { id: 'WISHLIST', label: `Favoritos (${wishlist.size})`, icon: <Heart size={15} className={wishlist.size > 0 ? "fill-red-500 text-red-500" : ""} /> },
                   { id: 'BLOG', label: 'Notícias & Matérias', icon: <Newspaper size={15} /> },
                   { id: 'SETTINGS', label: 'Painel do Atleta & HQ', icon: <Award size={15} /> },
@@ -7692,21 +7731,41 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
                 ].map((item) => {
                   const isActive = view === item.id;
                   return (
-                    <button
+                    <motion.button
                       key={item.id}
+                      initial="initial"
+                      whileHover="hover"
+                      whileTap="tap"
                       onClick={() => {
                         setIsMobileMenuOpen(false);
                         handleNavigate(item.id as any);
                       }}
-                      className={`w-full flex items-center gap-3 px-3 py-2.5 text-xs font-bold transition-all text-left ${
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 text-xs font-bold transition-all text-left group cursor-pointer ${
                         isActive
                           ? 'bg-black text-white dark:bg-white dark:text-black'
                           : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900'
                       }`}
                     >
-                      <span className={isActive ? 'text-green-500' : 'text-zinc-400'}>{item.icon}</span>
+                      <motion.span
+                        variants={{
+                          initial: { scale: 1, rotate: 0, y: 0 },
+                          hover: { 
+                            scale: 1.25, 
+                            rotate: [0, -10, 10, -4, 0], 
+                            y: -2,
+                            transition: { duration: 0.35, type: 'spring', stiffness: 350, damping: 15 } 
+                          },
+                          tap: { scale: 0.9 }
+                        }}
+                        whileHover={{ scale: 1.35, rotate: [0, -15, 15, -6, 0], y: -3 }}
+                        className={`p-1 rounded-sm shrink-0 flex items-center justify-center ${
+                          isActive ? 'text-green-500 bg-green-500/10' : 'text-zinc-400 group-hover:text-green-600 group-hover:bg-green-500/10'
+                        }`}
+                      >
+                        {item.icon}
+                      </motion.span>
                       <span className="uppercase tracking-wider text-[10.5px]">{item.label}</span>
-                    </button>
+                    </motion.button>
                   );
                 })}
               </div>
@@ -7829,6 +7888,15 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
             >
               <Scale size={12} />
               {t('nav.comparator_short', { defaultValue: 'Comparador' })}
+            </motion.button>
+            <motion.button 
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => handleNavigate('REVIEWS')}
+              className={`micro-label px-3 h-9 flex items-center gap-2 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all rounded-none cursor-pointer ${view === 'REVIEWS' ? 'text-amber-500 border-b-2 border-amber-500 font-black' : 'text-zinc-500'}`}
+            >
+              <Star size={12} className={view === 'REVIEWS' ? 'text-amber-500 fill-amber-500' : 'text-zinc-400'} />
+              <span>Reviews</span>
             </motion.button>
           </nav>
 
@@ -8168,6 +8236,19 @@ Retorne estritamente um array JSON de ${!auto ? '4' : '3'} elementos no formato 
               </div>
             ) : view === 'COMPARATOR' ? (
               <PriceComparator onBack={() => handleNavigate('LANDING')} />
+            ) : view === 'REVIEWS' ? (
+              <CommunityReviewsHub 
+                productList={productList}
+                currentUserId={user?.uid}
+                currentUserName={user?.displayName || user?.email?.split('@')[0]}
+                onNavigateProduct={(p) => {
+                  setSelectedGalleryProduct(p);
+                  setIsGalleryOpen(true);
+                }}
+                onNavigate={handleNavigate}
+                addToast={addToast}
+                playClickSound={playClickSound}
+              />
             ) : (view === 'SETTINGS' || view === 'DASHBOARD') && user ? (
               <Suspense fallback={
                 <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">

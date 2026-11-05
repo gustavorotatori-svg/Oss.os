@@ -20,7 +20,8 @@ import {
   Dumbbell,
   Users,
   Zap,
-  Smartphone
+  Smartphone,
+  Star
 } from 'lucide-react';
 import { OssLogo } from './Logo';
 import { Button } from '@/components/ui/button';
@@ -62,6 +63,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { label: t('nav.home'), value: 'LANDING', icon: Home },
     { label: t('nav.shop'), value: 'SHOP', icon: ShoppingCart },
     { label: t('landing.compare_prices', { defaultValue: 'Comparar Preços' }), value: 'COMPARATOR', icon: Award, isNew: true },
+    { label: 'Avaliações & Reviews', value: 'REVIEWS', icon: Star, isNew: true },
     { label: t('nav.blog', { defaultValue: 'Notícias' }), value: 'BLOG', icon: Newspaper, isNew: true },
     { label: t('nav.podcast', { defaultValue: 'Podcast' }), value: 'PODCAST', icon: Mic, isNew: true },
     { label: t('nav.wishlist'), value: 'WISHLIST', icon: Heart, count: wishlistCount },
@@ -98,9 +100,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <span className="micro-label text-green-600 font-bold uppercase tracking-widest leading-none mt-1">{t('common.admin')} // v3.0</span>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" onClick={onClose} className="rounded-none hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all">
-                <X size={20} />
-              </Button>
+              <motion.button 
+                whileHover={{ scale: 1.15, rotate: 90 }} 
+                whileTap={{ scale: 0.9 }}
+                onClick={onClose} 
+                className="p-2 border border-transparent hover:border-black dark:hover:border-white rounded-none hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all cursor-pointer"
+                title="Fechar Menu"
+              >
+                <X size={18} />
+              </motion.button>
             </div>
 
             {/* User Profile / Auth */}
@@ -156,7 +164,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {menuItems.map((item, idx) => (
                   <motion.button 
                     key={item.value}
-                    initial={{ x: -25, opacity: 0 }}
+                    initial="initial"
+                    whileHover="hover"
+                    whileTap="tap"
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ 
                       delay: idx * 0.05,
@@ -168,19 +178,46 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       onNavigate(item.value);
                       onClose();
                     }}
-                    whileHover={{ scale: 1.02, x: 5 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`flex items-center justify-between p-4 group transition-all rounded-none border-b border-zinc-50 dark:border-zinc-900 last:border-b-0 ${
+                    className={`flex items-center justify-between p-3.5 group transition-all rounded-none border-b border-zinc-50 dark:border-zinc-900 last:border-b-0 cursor-pointer ${
                       currentView === item.value 
                         ? 'bg-black text-white dark:bg-white dark:text-black shadow-lg z-10' 
-                        : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100/50 dark:hover:bg-zinc-900/50 hover:pl-6'
+                        : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100/60 dark:hover:bg-zinc-900/60 hover:pl-5'
                     }`}
                   >
-                    <div className="flex items-center gap-4">
-                      <item.icon size={18} className={currentView === item.value ? '' : 'text-zinc-300 group-hover:text-green-600 transition-colors'} />
-                      <span className="micro-label font-black text-[10px]">{item.label}</span>
+                    <div className="flex items-center gap-3.5">
+                      <motion.div
+                        variants={{
+                          initial: { scale: 1, rotate: 0, y: 0 },
+                          hover: { 
+                            scale: 1.25, 
+                            rotate: [0, -12, 12, -4, 0], 
+                            y: -2,
+                            transition: {
+                              duration: 0.35,
+                              type: 'spring',
+                              stiffness: 350,
+                              damping: 15
+                            }
+                          },
+                          tap: { scale: 0.9 }
+                        }}
+                        whileHover={{ 
+                          scale: 1.32, 
+                          rotate: [0, -15, 15, -6, 0],
+                          y: -3,
+                          transition: { duration: 0.3 }
+                        }}
+                        className={`p-1.5 rounded-sm transition-colors flex items-center justify-center shrink-0 ${
+                          currentView === item.value
+                            ? 'bg-white/20 text-white dark:bg-black/20 dark:text-black shadow-inner'
+                            : 'text-zinc-400 group-hover:text-green-600 group-hover:bg-green-500/10'
+                        }`}
+                      >
+                        <item.icon size={18} />
+                      </motion.div>
+                      <span className="micro-label font-black text-[10px] tracking-wider">{item.label}</span>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2.5">
                       {item.isNew && (
                         <span className={`text-[7.5px] font-mono font-black uppercase px-1.5 py-0.5 rounded-none tracking-widest flex items-center gap-1 shadow-sm ${
                           currentView === item.value 
@@ -196,7 +233,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           {item.count}
                         </span>
                       )}
-                      <ChevronRight size={14} className={`transition-transform duration-300 ${currentView === item.value ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-hover:translate-x-1'}`} />
+                      <motion.div
+                        variants={{
+                          initial: { x: 0 },
+                          hover: { x: 3 }
+                        }}
+                      >
+                        <ChevronRight size={14} className={`transition-transform duration-300 ${currentView === item.value ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
+                      </motion.div>
                     </div>
                   </motion.button>
                 ))}
@@ -265,9 +309,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                <div className="flex justify-between items-center mb-8">
                   <h4 className="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-300">Social Connect</h4>
                   <div className="flex gap-4">
-                    <Instagram size={18} className="text-zinc-400 hover:text-black dark:hover:text-white cursor-pointer transition-colors" />
-                    <Facebook size={18} className="text-zinc-400 hover:text-black dark:hover:text-white cursor-pointer transition-colors" />
-                    <Twitter size={18} className="text-zinc-400 hover:text-black dark:hover:text-white cursor-pointer transition-colors" />
+                    <motion.div whileHover={{ scale: 1.3, y: -3, color: '#22c55e' }} transition={{ type: 'spring', stiffness: 400 }}>
+                      <Instagram size={18} className="text-zinc-400 hover:text-green-500 cursor-pointer transition-colors" />
+                    </motion.div>
+                    <motion.div whileHover={{ scale: 1.3, y: -3, color: '#22c55e' }} transition={{ type: 'spring', stiffness: 400 }}>
+                      <Facebook size={18} className="text-zinc-400 hover:text-green-500 cursor-pointer transition-colors" />
+                    </motion.div>
+                    <motion.div whileHover={{ scale: 1.3, y: -3, color: '#22c55e' }} transition={{ type: 'spring', stiffness: 400 }}>
+                      <Twitter size={18} className="text-zinc-400 hover:text-green-500 cursor-pointer transition-colors" />
+                    </motion.div>
                   </div>
                </div>
                <div className="flex flex-col items-center">

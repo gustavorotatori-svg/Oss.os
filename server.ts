@@ -304,6 +304,52 @@ async function startServer() {
     res.json({ success: true, message: "Agendamento não encontrado ou já cancelado." });
   });
 
+  // Training Reminders Store
+  const serverTrainingReminders: Array<{
+    email: string;
+    config: any;
+    updatedAt: string;
+  }> = [];
+
+  // 6. Get Training Reminders
+  app.get("/api/fcm/training-reminders", (req, res) => {
+    const email = (req.query.email as string) || 'atleta@oss.os';
+    const found = serverTrainingReminders.find(r => r.email === email);
+    res.json({
+      success: true,
+      config: found ? found.config : null
+    });
+  });
+
+  // 7. Save / Update Training Reminders
+  app.post("/api/fcm/training-reminders", (req, res) => {
+    const { email = 'atleta@oss.os', config } = req.body || {};
+    if (!config) {
+      return res.status(400).json({ error: "Configuração de treino é obrigatória." });
+    }
+
+    const existingIdx = serverTrainingReminders.findIndex(r => r.email === email);
+    const record = {
+      email,
+      config,
+      updatedAt: new Date().toISOString()
+    };
+
+    if (existingIdx >= 0) {
+      serverTrainingReminders[existingIdx] = record;
+    } else {
+      serverTrainingReminders.push(record);
+    }
+
+    console.log(`[FCM Server] Configuração de Lembretes de Treino atualizada para ${email}: ${config.schedules?.join(', ')}h`);
+
+    res.json({
+      success: true,
+      message: "Lembretes de treino salvos com sucesso no servidor de Push.",
+      record
+    });
+  });
+
   // Background timer ticker checking for due scheduled notifications
   setInterval(() => {
     const now = new Date();

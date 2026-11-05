@@ -13,10 +13,33 @@ export default defineConfig(({mode}) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
-        'react': path.resolve(__dirname, 'node_modules/react'),
-        'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
+        'react-window': path.resolve(__dirname, 'node_modules/react-window/dist/react-window.cjs'),
       },
       dedupe: ['react', 'react-dom'],
+    },
+    esbuild: {
+      target: 'esnext',
+    },
+    build: {
+      target: 'esnext',
+    },
+    optimizeDeps: {
+      esbuildOptions: {
+        target: 'esnext',
+      },
+      include: [
+        'react',
+        'react-dom',
+        'react-dom/client',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+        'react-router-dom',
+        'react-helmet-async',
+        'react-i18next',
+        'react-window',
+        'lucide-react',
+        'motion/react',
+      ],
     },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.

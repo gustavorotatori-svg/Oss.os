@@ -13,10 +13,12 @@ import {
   Eye,
   Settings,
   Flame,
-  Award
+  Award,
+  Clock
 } from 'lucide-react';
 import { Product } from '../types';
 import BJJImage from './BJJImage';
+import { TrainingRemindersSettings } from './TrainingRemindersSettings';
 
 export interface UserDashboardProps {
   user: any;
@@ -59,7 +61,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
   addToast,
   playClickSound
 }) => {
-  const [activeTab, setActiveTab] = useState<'wishlist' | 'alerts' | 'account'>('wishlist');
+  const [activeTab, setActiveTab] = useState<'wishlist' | 'alerts' | 'reminders' | 'account'>('wishlist');
 
   // Filter alerted products
   const alertedProducts = productList.filter(p => wishlistAlerts.has(p.id));
@@ -137,6 +139,21 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
         >
           <Bell size={14} />
           <span>Alertas de Preço ({alertsCount})</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setActiveTab('reminders');
+            playClickSound?.();
+          }}
+          className={`pb-3 px-3 font-mono text-xs font-black uppercase tracking-wider transition-colors border-b-2 flex items-center gap-1.5 ${
+            activeTab === 'reminders'
+              ? 'border-black dark:border-white text-black dark:text-white'
+              : 'border-transparent text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200'
+          }`}
+        >
+          <Clock size={14} />
+          <span>Lembretes de Treino</span>
         </button>
 
         <button
@@ -309,6 +326,15 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {activeTab === 'reminders' && (
+        <div className="space-y-4">
+          <TrainingRemindersSettings
+            userEmail={user?.email}
+            addToast={addToast}
+          />
         </div>
       )}
 

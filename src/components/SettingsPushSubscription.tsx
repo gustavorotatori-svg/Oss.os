@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { Product } from '../types';
 import { requestFCMToken, registerFCMServiceWorker, sendRealFCMPush } from '../lib/fcmService';
+import { TrainingRemindersSettings } from './TrainingRemindersSettings';
 
 export interface SettingsPushSubscriptionProps {
   wishlistProducts?: Product[];
@@ -544,6 +545,14 @@ export const SettingsPushSubscription: React.FC<SettingsPushSubscriptionProps> =
             }`} />
           </button>
         </div>
+      </div>
+
+      {/* 🥋 LEMBRETES DE TREINO DIÁRIOS (PUSH NOTIFICATIONS) */}
+      <div className="mt-8 pt-6 border-t-2 border-black dark:border-zinc-800" id="settings-training-reminders">
+        <TrainingRemindersSettings
+          userEmail={userEmail}
+          addToast={addToast}
+        />
       </div>
 
       {/* NEW: AUTOMATED TOPIC SUBSCRIPTION BY PRODUCT CATEGORY */}
